@@ -15,6 +15,42 @@ fun main() {
     SwingUtilities.invokeLater { window.show() }
 }
 
+/**
+ * This is where information about the various rooms are stored
+ *
+ *  @property name, The name of the room
+ *  @property roomDesc, A description of the room, may contain a hint to get the item
+ *  @property roomDescClear, A replacement for the description for once you have collected the item
+ *  @property lock, The item required to enter the room, if empty, no item is required
+ *  @property lock2, The second item required to enter the room, if applicable
+ *  @property lock3, The third item required to enter the room, if applicable
+ *  @property freeItem, An item you get just for entering the room and searching
+ *  @property itemLock, An item required to get the item in this room
+ *  @property item, The item you receive for fulfilling the criteria of itemLock
+ */
+class Room(
+    val name: String,
+    var roomDesc: String,
+    var roomDescClear: String,
+    var lock: String,
+    var lock2: String,
+    var lock3: String,
+    var freeItem: String,
+    var itemLock: String,
+    var item: String,
+) {
+    val adjacent = mutableListOf<Room>()
+
+}
+
+
+/**
+ *
+ */
+class Player {
+
+}
+
 
 /**
  * Manage app state
