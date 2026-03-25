@@ -9,8 +9,8 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
 
-    val app = App()                 // Get an app state object
-    val window = MainWindow(app)    // Spawn the UI, passing in the app state
+    val player = Player() // Get an app state object
+    val window = MainWindow(player)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
 }
@@ -41,6 +41,20 @@ class Room(
 ) {
     val adjacent = mutableListOf<Room>()
 
+    fun addDoor(room: Room) {
+        adjacent.add(room)
+    }
+}
+
+
+/**
+ *
+ */
+class Item(
+    val name: String,
+    val description: String,
+) {
+
 }
 
 
@@ -48,55 +62,355 @@ class Room(
  *
  */
 class Player {
+    var location = "Driveway"
+    var inventory = mutableListOf<Item>()
 
+    init {
+        val driveway = Room("Driveway",
+            "The mansion looms before you under a cloudy gray sky, a flattened cardboard box has found its way up onto the roof, where it lies, a blemish upon an otherwise spotless abode.",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val garden = Room("Garden",
+            "Gardesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val pool = Room("Pool",
+            "Pooldesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val greenhouse = Room("Greenhouse",
+            "Greedesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val foyer = Room("Foyer",
+            "Foydesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val garage = Room("Garage",
+            "Gardesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val basement = Room("Basement",
+            "Basdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val hall1 = Room("Downstairs Hallway",
+            "Halldesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val livroom1 = Room("Downstairs Living Room",
+            "Livdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val dinroom = Room("Dining Room",
+            "Dindesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val kitchen = Room("Kitchen",
+            "Kitdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val pantry = Room("Pantry",
+            "pandesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val bath1 = Room("Downstairs Bathroom",
+            "Bathdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val laundry = Room("Laundry",
+            "Laundesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val hall2 = Room("Upstairs Hallway",
+            "Halldesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val livroom2 = Room("Upstairs Living Room",
+            "Livdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val bal1 = Room("Balcony",
+            "Looking out from the balcony, a beautiful landscape stretches before you, a see of trees with leaves in shades of red and orange and purple. Up above, the clouds stretch across the sky towards the horizon, where a warm glow signals the end of the day, better get back to searching, before the owner gets back.",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val bath2 = Room("Upstairs Bathroom",
+            "Bathdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val gamesroom = Room("Games Room",
+            "Gamedesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val guestroom = Room("Guest Room",
+            "Guestdesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val bedroom = Room("Bedroom",
+            "Beddesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val bal2 = Room("Balcony",
+            "Baldesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val mBedroom = Room("Master Bedroom",
+            "Beddesc",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty")
+
+        val shed = Room("Shed",
+            "At long, long last, you've found your way into the shed, and there, parked in the corner, A gleaming piece of machinery stands ready to be put into action. You've finally found the lawnmower.",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Lawnmower",
+            "Empty",
+            "Empty")
+
+
+        driveway.addDoor(garden)
+        driveway.addDoor(garage)
+        driveway.addDoor(foyer)
+
+        garden.addDoor(driveway)
+        garden.addDoor(shed)
+        garden.addDoor(pool)
+
+        pool.addDoor(garden)
+        pool.addDoor(livroom1)
+        pool.addDoor(greenhouse)
+
+        greenhouse.addDoor(pool)
+        greenhouse.addDoor(kitchen)
+
+        foyer.addDoor(driveway)
+        foyer.addDoor(garage)
+        foyer.addDoor(hall1)
+        foyer.addDoor(hall2)
+
+        garage.addDoor(driveway)
+        garage.addDoor(foyer)
+        garage.addDoor(basement)
+
+        basement.addDoor(garage)
+
+        hall1.addDoor(foyer)
+        hall1.addDoor(hall2)
+        hall1.addDoor(livroom1)
+        hall1.addDoor(dinroom)
+        hall1.addDoor(kitchen)
+        hall1.addDoor(pantry)
+        hall1.addDoor(bath1)
+        hall1.addDoor(laundry)
+
+        livroom1.addDoor(pool)
+        livroom1.addDoor(dinroom)
+        livroom1.addDoor(hall1)
+
+        dinroom.addDoor(livroom1)
+        dinroom.addDoor(hall1)
+        dinroom.addDoor(kitchen)
+
+        kitchen.addDoor(dinroom)
+        kitchen.addDoor(greenhouse)
+        kitchen.addDoor(hall1)
+        kitchen.addDoor(pantry)
+
+        pantry.addDoor(kitchen)
+        pantry.addDoor(hall1)
+
+        bath1.addDoor(hall1)
+
+        laundry.addDoor(hall1)
+
+        hall2.addDoor(hall1)
+        hall2.addDoor(foyer)
+        hall2.addDoor(livroom2)
+        hall2.addDoor(bath2)
+        hall2.addDoor(gamesroom)
+        hall2.addDoor(guestroom)
+        hall2.addDoor(bedroom)
+        hall2.addDoor(mBedroom)
+
+        livroom2.addDoor(hall2)
+        livroom2.addDoor(bal1)
+
+        bath2.addDoor(hall2)
+
+        gamesroom.addDoor(hall2)
+
+        guestroom.addDoor(hall2)
+
+        bedroom.addDoor(hall2)
+        bedroom.addDoor(bal2)
+
+        bal2.addDoor(mBedroom)
+
+        mBedroom.addDoor(hall2)
+        mBedroom.addDoor(bal2)
+
+        shed.addDoor(garden)
+    }
+
+    fun changeLoc(newloc: Room) {
+        location = newloc.name
+    }
 }
 
 
 /**
- * Manage app state
- *
- * @property name the user's name
- * @property score the points earned
+ * Player's UI window, shows current location and inventory
  */
-class App {
-    var name = "Test"
-    var score = 0
-
-    fun scorePoints(points: Int) {
-        score += points
-    }
-
-    fun resetScore() {
-        score = 0
-    }
-
-    fun maxScoreReached(): Boolean {
-        return score >= 10000
-    }
-}
-
-
-/**
- * Main UI window, handles user clicks, etc.
- *
- * @param app the app state object
- */
-class MainWindow(val app: App) {
-    val frame = JFrame("WINDOW TITLE")
+class MainWindow(val player: Player) {
+    val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val titleLabel = JLabel("APP TITLE")
+    private val titleLabel = JLabel("Current location: ${player.location}")
 
-    private val infoLabel = JLabel()
-    private val clickButton = JButton("Click Me!")
-    private val infoButton = JButton("Info")
-
-    private val infoWindow = InfoWindow(this, app)      // Pass app state to dialog too
+    private val infoLabel = JLabel("Inventory:")
 
     init {
         setupLayout()
         setupStyles()
-        setupActions()
         setupWindow()
         updateUI()
     }
@@ -106,23 +420,14 @@ class MainWindow(val app: App) {
 
         titleLabel.setBounds(30, 30, 340, 30)
         infoLabel.setBounds(30, 90, 340, 30)
-        clickButton.setBounds(30, 150, 240, 40)
-        infoButton.setBounds(300, 150, 70, 40)
 
         panel.add(titleLabel)
         panel.add(infoLabel)
-        panel.add(clickButton)
-        panel.add(infoButton)
     }
 
     private fun setupStyles() {
-        titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 32)
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-
-        clickButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
-        clickButton.background = Color(0xcc0055)
-
-        infoButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 20)
+        titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 20)
+        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
     private fun setupWindow() {
@@ -133,32 +438,8 @@ class MainWindow(val app: App) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
-    private fun setupActions() {
-        clickButton.addActionListener { handleMainClick() }
-        infoButton.addActionListener { handleInfoClick() }
-    }
-
-    private fun handleMainClick() {
-        app.scorePoints(1000)       // Update the app state
-        updateUI()                  // Update this window UI to reflect this
-    }
-
-    private fun handleInfoClick() {
-        infoWindow.show()
-    }
-
     fun updateUI() {
-        infoLabel.text = "User ${app.name} has ${app.score} points"
-
-        if (app.maxScoreReached()) {
-            clickButton.text = "No More!"
-            clickButton.isEnabled = false
-        } else {
-            clickButton.text = "Click Me!"
-            clickButton.isEnabled = true
-        }
-
-        infoWindow.updateUI()       // Keep child dialog window UI up-to-date too
+        infoLabel.text = "Inventory: ${player.inventory}"
     }
 
     fun show() {
@@ -166,74 +447,47 @@ class MainWindow(val app: App) {
     }
 }
 
-
 /**
- * Info UI window is a child dialog and shows how the
- * app state can be shown / updated from multiple places
- *
- * @param owner the parent frame, used to position and layer the dialog correctly
- * @param app the app state object
+ * Room UI window, gives a description and shows the rooms you can travel to
  */
-class InfoWindow(val owner: MainWindow, val app: App) {
-    private val dialog = JDialog(owner.frame, "DIALOG TITLE", false)
+class RoomWindow(val room: Room) {
+    val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val infoLabel = JLabel()
-    private val resetButton = JButton("Reset")
+    private val descLabel = JLabel(room.roomDesc)
+
+    private val infoLabel = JLabel("Inventory:")
 
     init {
         setupLayout()
         setupStyles()
-        setupActions()
         setupWindow()
-        updateUI()
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(240, 180)
+        panel.preferredSize = java.awt.Dimension(400, 220)
 
-        infoLabel.setBounds(30, 30, 180, 60)
-        resetButton.setBounds(30, 120, 180, 30)
+        descLabel.setBounds(30, 30, 340, 30)
+        infoLabel.setBounds(30, 90, 340, 30)
 
+        panel.add(descLabel)
         panel.add(infoLabel)
-        panel.add(resetButton)
     }
 
     private fun setupStyles() {
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
-        resetButton.font = Font(Font.SANS_SERIF, Font.PLAIN, 16)
+        descLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
+        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
     private fun setupWindow() {
-        dialog.isResizable = false                              // Can't resize
-        dialog.defaultCloseOperation = JDialog.HIDE_ON_CLOSE    // Hide upon window close
-        dialog.contentPane = panel                              // Main content panel
-        dialog.pack()
-    }
-
-    private fun setupActions() {
-        resetButton.addActionListener { handleResetClick() }
-    }
-
-    private fun handleResetClick() {
-        app.resetScore()    // Update the app state
-        owner.updateUI()    // Update the UI to reflect this, via the main window
-    }
-
-    fun updateUI() {
-        // Use app properties to display state
-        infoLabel.text = "<html>User: ${app.name}<br>Score: ${app.score} points"
-
-        resetButton.isEnabled = app.score > 0
+        frame.isResizable = false                           // Can't resize
+        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE  // Exit upon window close
+        frame.contentPane = panel                           // Define the main content
+        frame.pack()
+        frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
     fun show() {
-        val ownerBounds = owner.frame.bounds          // get location of the main window
-        dialog.setLocation(                           // Position next to main window
-            ownerBounds.x + ownerBounds.width + 10,
-            ownerBounds.y
-        )
-
-        dialog.isVisible = true
+        frame.isVisible = true
     }
 }
