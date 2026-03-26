@@ -13,6 +13,7 @@ fun main() {
     val window = MainWindow(player)    // Spawn the UI, passing in the app state
 
     SwingUtilities.invokeLater { window.show() }
+    window.enterRoom()
 }
 
 /**
@@ -64,6 +65,8 @@ class Item(
 class Player {
     var location = "Driveway"
     var inventory = mutableListOf<Item>()
+
+    val rooms: MutableList<Room> = mutableListOf()
 
     init {
         val driveway = Room("Driveway",
@@ -276,7 +279,7 @@ class Player {
             "Empty",
             "Empty")
 
-        val bal2 = Room("Balcony",
+        val bal2 = Room("Bedroom Balcony",
             "Baldesc",
             "Empty",
             "Empty",
@@ -305,6 +308,30 @@ class Player {
             "Lawnmower",
             "Empty",
             "Empty")
+
+        rooms.add(driveway)
+        rooms.add(garden)
+        rooms.add(pool)
+        rooms.add(greenhouse)
+        rooms.add(foyer)
+        rooms.add(garage)
+        rooms.add(basement)
+        rooms.add(hall1)
+        rooms.add(livroom1)
+        rooms.add(dinroom)
+        rooms.add(kitchen)
+        rooms.add(pantry)
+        rooms.add(bath1)
+        rooms.add(laundry)
+        rooms.add(hall2)
+        rooms.add(livroom2)
+        rooms.add(bal1)
+        rooms.add(bath2)
+        rooms.add(guestroom)
+        rooms.add(bedroom)
+        rooms.add(bal2)
+        rooms.add(mBedroom)
+        rooms.add(shed)
 
 
         driveway.addDoor(garden)
@@ -445,6 +472,15 @@ class MainWindow(val player: Player) {
     fun show() {
         frame.isVisible = true
     }
+
+    fun enterRoom() {
+        for (room in player.rooms) {
+            if (room.name == player.location) {
+                val roomWindow = RoomWindow(room)
+                roomWindow.show()
+            }
+        }
+    }
 }
 
 /**
@@ -456,8 +492,6 @@ class RoomWindow(val room: Room) {
 
     private val descLabel = JLabel(room.roomDesc)
 
-    private val infoLabel = JLabel("Inventory:")
-
     init {
         setupLayout()
         setupStyles()
@@ -468,15 +502,12 @@ class RoomWindow(val room: Room) {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
         descLabel.setBounds(30, 30, 340, 30)
-        infoLabel.setBounds(30, 90, 340, 30)
 
         panel.add(descLabel)
-        panel.add(infoLabel)
     }
 
     private fun setupStyles() {
         descLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
     private fun setupWindow() {
