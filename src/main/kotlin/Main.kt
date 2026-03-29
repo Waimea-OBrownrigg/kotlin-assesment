@@ -63,7 +63,7 @@ class Item(
  *
  */
 class Player {
-    var location = "Driveway"
+    var location = "Downstairs Living Room"
     var inventory = mutableListOf<Item>()
 
     val rooms: MutableList<Room> = mutableListOf()
@@ -443,10 +443,10 @@ class MainWindow(val player: Player) {
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(400, 220)
+        panel.preferredSize = java.awt.Dimension(420, 150)
 
-        titleLabel.setBounds(30, 30, 340, 30)
-        infoLabel.setBounds(30, 90, 340, 30)
+        titleLabel.setBounds(10, 0, 450, 30)
+        infoLabel.setBounds(30, 40, 340, 30)
 
         panel.add(titleLabel)
         panel.add(infoLabel)
@@ -476,7 +476,7 @@ class MainWindow(val player: Player) {
     fun enterRoom() {
         for (room in player.rooms) {
             if (room.name == player.location) {
-                val roomWindow = RoomWindow(room)
+                val roomWindow = RoomWindow(this, room)
                 roomWindow.show()
             }
         }
@@ -486,11 +486,11 @@ class MainWindow(val player: Player) {
 /**
  * Room UI window, gives a description and shows the rooms you can travel to
  */
-class RoomWindow(val room: Room) {
+class RoomWindow(val owner: MainWindow, val room: Room) {
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val descLabel = JLabel(room.roomDesc)
+    private val descLabel = JLabel("<html><wrap>${room.roomDesc}</wrap></html>")
 
     init {
         setupLayout()
@@ -501,7 +501,7 @@ class RoomWindow(val room: Room) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
-        descLabel.setBounds(30, 30, 340, 30)
+        descLabel.setBounds(30, 10, 340, 70)
 
         panel.add(descLabel)
     }
@@ -518,7 +518,12 @@ class RoomWindow(val room: Room) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
+
     fun show() {
+        val ownerBounds = owner.frame.bounds
+        frame.setLocation(ownerBounds.x + ownerBounds.width, ownerBounds.y)
+
         frame.isVisible = true
     }
+
 }
