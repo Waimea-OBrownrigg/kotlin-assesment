@@ -63,7 +63,7 @@ class Item(
  *
  */
 class Player {
-    var location = "Downstairs Living Room"
+    var location = "Driveway"
     var inventory = mutableListOf<Item>()
 
     val rooms: MutableList<Room> = mutableListOf()
@@ -490,20 +490,24 @@ class RoomWindow(val owner: MainWindow, val room: Room) {
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
+    private val travelButton = JButton("Move")
     private val descLabel = JLabel("<html><wrap>${room.roomDesc}</wrap></html>")
 
     init {
         setupLayout()
         setupStyles()
         setupWindow()
+        setupActions()
     }
 
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
         descLabel.setBounds(30, 10, 340, 70)
+        travelButton.setBounds(20, 100, 100, 30)
 
         panel.add(descLabel)
+        panel.add(travelButton)
     }
 
     private fun setupStyles() {
@@ -518,6 +522,70 @@ class RoomWindow(val owner: MainWindow, val room: Room) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
+    private fun setupActions() {
+        travelButton.addActionListener { openTravelMenu() }
+    }
+
+    private fun openTravelMenu() {
+        travelButton.isEnabled = false
+        val TravelWindow = TravelWindow(this, room.adjacent)
+        TravelWindow.show()
+    }
+
+    fun show() {
+        val ownerBounds = owner.frame.bounds
+        frame.setLocation(ownerBounds.x + ownerBounds.width, ownerBounds.y)
+
+        frame.isVisible = true
+    }
+
+}
+
+class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
+    var curdes = 
+
+    val frame = JFrame("Placeholder name")
+    private val panel = JPanel().apply { layout = null }
+
+    private val descLabel = JLabel("Current destination: ")
+    private val cycleButton = JButton("Next Location")
+    private val goButton = JButton("Go")
+
+    init {
+        setupLayout()
+        setupStyles()
+        setupWindow()
+        setupActions()
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(400, 220)
+
+        descLabel.setBounds(30, 10, 340, 70)
+        travelButton.setBounds(20, 100, 100, 30)
+
+        panel.add(descLabel)
+        panel.add(travelButton)
+    }
+
+    private fun setupStyles() {
+        descLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
+    }
+
+    private fun setupWindow() {
+        frame.isResizable = false                           // Can't resize
+        frame.contentPane = panel                           // Define the main content
+        frame.pack()
+        frame.setLocationRelativeTo(null)                   // Centre on the screen
+    }
+
+    private fun setupActions() {
+        travelButton.addActionListener { openTravelMenu() }
+    }
+
+    private fun openTravelMenu() {
+        travelButton.isEnabled = false
+    }
 
     fun show() {
         val ownerBounds = owner.frame.bounds
