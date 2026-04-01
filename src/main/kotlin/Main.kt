@@ -542,12 +542,12 @@ class RoomWindow(val owner: MainWindow, val room: Room) {
 }
 
 class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
-    var curdes = 
+    var curdes = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val descLabel = JLabel("Current destination: ")
+    private val descLabel = JLabel("Current destination: ${rooms[curdes]}")
     private val cycleButton = JButton("Next Location")
     private val goButton = JButton("Go")
 
@@ -562,10 +562,10 @@ class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
         descLabel.setBounds(30, 10, 340, 70)
-        travelButton.setBounds(20, 100, 100, 30)
+        cycleButton.setBounds(20, 100, 100, 30)
 
         panel.add(descLabel)
-        panel.add(travelButton)
+        panel.add(cycleButton)
     }
 
     private fun setupStyles() {
@@ -580,11 +580,17 @@ class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
     }
 
     private fun setupActions() {
-        travelButton.addActionListener { openTravelMenu() }
+        cycleButton.addActionListener { cycle() }
     }
 
-    private fun openTravelMenu() {
-        travelButton.isEnabled = false
+    private fun cycle() {
+        if (curdes == rooms.size) {
+            curdes = 0
+        }
+        else {
+            curdes += 1
+        }
+
     }
 
     fun show() {
