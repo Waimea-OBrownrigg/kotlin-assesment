@@ -421,6 +421,16 @@ class Player {
     fun changeLoc(newloc: Room) {
         location = newloc.name
     }
+
+    fun openRoomWindow(room: Room) {
+        val roomWindow = RoomWindow(this, room)
+        roomWindow.show()
+    }
+
+    fun openTravelMenu() {
+        val TravelWindow = TravelWindow(rooms)
+        TravelWindow.show()
+    }
 }
 
 
@@ -461,6 +471,7 @@ class MainWindow(val player: Player) {
         frame.isResizable = false                           // Can't resize
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE  // Exit upon window close
         frame.contentPane = panel                           // Define the main content
+
         frame.pack()
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
@@ -476,8 +487,7 @@ class MainWindow(val player: Player) {
     fun enterRoom() {
         for (room in player.rooms) {
             if (room.name == player.location) {
-                val roomWindow = RoomWindow(this, room)
-                roomWindow.show()
+                player.openRoomWindow(room)
             }
         }
     }
@@ -486,7 +496,7 @@ class MainWindow(val player: Player) {
 /**
  * Room UI window, gives a description and shows the rooms you can travel to
  */
-class RoomWindow(val owner: MainWindow, val room: Room) {
+class RoomWindow(val player: Player, val room: Room) {
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
@@ -528,26 +538,22 @@ class RoomWindow(val owner: MainWindow, val room: Room) {
 
     private fun openTravelMenu() {
         travelButton.isEnabled = false
-        val TravelWindow = TravelWindow(this, room.adjacent)
-        TravelWindow.show()
+        player.openTravelMenu()
     }
 
     fun show() {
-        val ownerBounds = owner.frame.bounds
-        frame.setLocation(ownerBounds.x + ownerBounds.width, ownerBounds.y)
-
         frame.isVisible = true
     }
 
 }
 
-class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
+class TravelWindow(val rooms: MutableList<Room>) {
     var curdes = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val descLabel = JLabel("Current destination: ${rooms[curdes]}")
+    private val descLabel = JLabel("Current destination: ${rooms[curdes].name}")
     private val cycleButton = JButton("Next Location")
     private val goButton = JButton("Go")
 
@@ -562,7 +568,7 @@ class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
         descLabel.setBounds(30, 10, 340, 70)
-        cycleButton.setBounds(20, 100, 100, 30)
+        cycleButton.setBounds(20, 100, 150, 30)
 
         panel.add(descLabel)
         panel.add(cycleButton)
@@ -590,13 +596,14 @@ class TravelWindow(val owner: RoomWindow, val rooms: MutableList<Room>) {
         else {
             curdes += 1
         }
+        update()
+    }
 
+    private fun update() {
+        descLabel.text = "Current destination: ${rooms[curdes].name}"
     }
 
     fun show() {
-        val ownerBounds = owner.frame.bounds
-        frame.setLocation(ownerBounds.x + ownerBounds.width, ownerBounds.y)
-
         frame.isVisible = true
     }
 
