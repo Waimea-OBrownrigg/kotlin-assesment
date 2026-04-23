@@ -64,7 +64,9 @@ class Player {
 
     val rooms: MutableList<Room> = mutableListOf()
 
-    val mainWindow = MainWindow(this)
+    lateinit var mainWindow: MainWindow
+    lateinit var roomWindow: RoomWindow
+    lateinit var travelWindow: TravelWindow
 
     init {
 
@@ -417,17 +419,22 @@ class Player {
         shed.addDoor(garden)
 
 
-        mainWindow.show()
+        makeWindows()
+        showWindows()
     }
 
-    val roomWindow = RoomWindow(this, rooms)
-    val travelWindow = TravelWindow(this, rooms)
+    private fun makeWindows() {
+        mainWindow = MainWindow(this)
+        roomWindow = RoomWindow(this, rooms)
+    }
 
-    fun openRoomWindow() {
+    fun showWindows() {
+        mainWindow.show()
         roomWindow.show()
     }
 
-    fun openTravelMenu(rooms: MutableList<Room>) {
+    fun openTravelMenu(theCoolerRooms: MutableList<Room>) {
+        travelWindow = TravelWindow(this, theCoolerRooms)
         travelWindow.show()
     }
 
@@ -437,6 +444,7 @@ class Player {
                 location = destination
                 mainWindow.updateUI()
                 roomWindow.updateUI()
+                travelWindow.hide()
             }
         }
     }
@@ -485,10 +493,6 @@ class MainWindow(val player: Player) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
-    private fun openRoomWindow() {
-        player.openRoomWindow()
-    }
-
     fun updateUI() {
         titleLabel.text = "Current location: ${player.location}"
         infoLabel.text = "Inventory: ${player.inventory}"
@@ -503,7 +507,7 @@ class MainWindow(val player: Player) {
  * Room UI window, gives a description and shows the rooms you can travel to
  */
 class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
-    val loc = 0
+    var loc = 0
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
@@ -549,6 +553,11 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 
     fun updateUI() {
+        for (room in rooms) {
+            if (room.name == player.location) {
+                loc = rooms.indexOf(room)
+            }
+        }
         descLabel.text = "<html><wrap>${rooms[loc].roomDesc}</wrap></html>"
         travelButton.isEnabled = true
     }
@@ -624,4 +633,81 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     fun show() {
         frame.isVisible = true
     }
+
+    fun hide() {
+        frame.isVisible = false
+    }
 }
+
+/*
+class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
+    var curdes = 0
+
+    val frame = JFrame("Placeholder name")
+    private val panel = JPanel().apply { layout = null }
+
+    private val descLabel = JLabel("Current destination: ${rooms[curdes].name}")
+    private val cycleButton = JButton("Next Location")
+    private val goButton = JButton("Go")
+
+    init {
+        setupLayout()
+        setupStyles()
+        setupWindow()
+        setupActions()
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(400, 220)
+
+        descLabel.setBounds(30, 10, 340, 70)
+        cycleButton.setBounds(20, 100, 150, 30)
+        goButton.setBounds(20, 150, 150, 30)
+
+        panel.add(descLabel)
+        panel.add(cycleButton)
+        panel.add(goButton)
+    }
+
+    private fun setupStyles() {
+        descLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
+    }
+
+    private fun setupWindow() {
+        frame.isResizable = false                           // Can't resize
+        frame.contentPane = panel                           // Define the main content
+        frame.pack()
+        frame.setLocationRelativeTo(null)                   // Centre on the screen
+    }
+
+    private fun setupActions() {
+        cycleButton.addActionListener { cycle() }
+        goButton.addActionListener { startMoveProccess() }
+    }
+
+    private fun cycle() {
+        if (curdes == rooms.size - 1) {
+            curdes = 0
+        }
+        else {
+            curdes += 1
+        }
+        updateUI()
+    }
+
+    private fun startMoveProccess() {
+        player.move(rooms[curdes].name)
+    }
+
+    private fun updateUI() {
+        descLabel.text = "Current destination: ${rooms[curdes].name}"
+    }
+
+    fun show() {
+        frame.isVisible = true
+    }
+
+    fun hide() {
+        frame.isVisible = false
+    }
+}*/
