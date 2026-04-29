@@ -60,13 +60,14 @@ class Item(
  */
 class Player {
     var location = "Driveway"
-    var inventory = mutableListOf<Item>()
+    val inventory = mutableListOf<Item>()
 
     val rooms: MutableList<Room> = mutableListOf()
 
     lateinit var mainWindow: MainWindow
     lateinit var roomWindow: RoomWindow
     lateinit var travelWindow: TravelWindow
+    lateinit var keyWindow: KeyWindow
 
     init {
 
@@ -113,7 +114,7 @@ class Player {
         val foyer = Room("Foyer",
             "Foydesc",
             "Empty",
-            "Empty",
+            "CoolKey",
             "Empty",
             "Empty",
             "Empty",
@@ -310,6 +311,10 @@ class Player {
             "Empty",
             "Empty")
 
+        val test = Item("Test", "testdesc")
+
+        inventory.add(test)
+
         rooms.add(driveway)
         rooms.add(garden)
         rooms.add(pool)
@@ -402,6 +407,8 @@ class Player {
         livroom2.addDoor(hall2)
         livroom2.addDoor(bal1)
 
+        bal1.addDoor(livroom2)
+
         bath2.addDoor(hall2)
 
         gamesroom.addDoor(hall2)
@@ -426,6 +433,7 @@ class Player {
     private fun makeWindows() {
         mainWindow = MainWindow(this)
         roomWindow = RoomWindow(this, rooms)
+        keyWindow = KeyWindow(this, inventory)
     }
 
     fun showWindows() {
@@ -441,10 +449,15 @@ class Player {
     fun move(destination: String) {
         for (room in rooms) {
             if (room.name == destination) {
-                location = destination
-                mainWindow.updateUI()
-                roomWindow.updateUI()
-                travelWindow.hide()
+                if (room.lock == "Empty") {
+                    location = destination
+                    mainWindow.updateUI()
+                    roomWindow.updateUI()
+                    travelWindow.hide()
+                }
+                else {
+                    keyWindow.show()
+                }
             }
         }
     }
@@ -573,7 +586,7 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val descLabel = JLabel("Current destination: ${rooms[curdes].name}")
+    private val desLabel = JLabel("Current destination: ${rooms[curdes].name}")
     private val cycleButton = JButton("Next Location")
     private val goButton = JButton("Go")
 
@@ -587,17 +600,17 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
-        descLabel.setBounds(30, 10, 340, 70)
+        desLabel.setBounds(30, 10, 340, 70)
         cycleButton.setBounds(20, 100, 150, 30)
         goButton.setBounds(20, 150, 150, 30)
 
-        panel.add(descLabel)
+        panel.add(desLabel)
         panel.add(cycleButton)
         panel.add(goButton)
     }
 
     private fun setupStyles() {
-        descLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
+        desLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
     private fun setupWindow() {
@@ -627,7 +640,7 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 
     private fun updateUI() {
-        descLabel.text = "Current destination: ${rooms[curdes].name}"
+        desLabel.text = "Current destination: ${rooms[curdes].name}"
     }
 
     fun show() {
@@ -639,16 +652,17 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 }
 
-/*
-class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
+class KeyWindow(val player: Player, val keys: MutableList<Item>) {
     var curdes = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val descLabel = JLabel("Current destination: ${rooms[curdes].name}")
-    private val cycleButton = JButton("Next Location")
-    private val goButton = JButton("Go")
+    private val infoLabel = JLabel("What item will you use")
+    private val itemLabel = JLabel("Item: ${keys[curdes].name}")
+    private val cycleButton = JButton("Next Item")
+    private val goButton = JButton("Use")
+    private val stopButton = JButton("Cancel")
 
     init {
         setupLayout()
@@ -660,17 +674,21 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
-        descLabel.setBounds(30, 10, 340, 70)
+        infoLabel.setBounds(30, 10, 340, 70)
+        itemLabel.setBounds(30, 50, 340, 70)
         cycleButton.setBounds(20, 100, 150, 30)
         goButton.setBounds(20, 150, 150, 30)
+        stopButton.setBounds(20, 200, 150, 30)
 
-        panel.add(descLabel)
+        panel.add(infoLabel)
+        panel.add(itemLabel)
         panel.add(cycleButton)
         panel.add(goButton)
+        panel.add(stopButton)
     }
 
     private fun setupStyles() {
-        descLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
+        itemLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
     private fun setupWindow() {
@@ -682,11 +700,10 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
 
     private fun setupActions() {
         cycleButton.addActionListener { cycle() }
-        goButton.addActionListener { startMoveProccess() }
     }
 
     private fun cycle() {
-        if (curdes == rooms.size - 1) {
+        if (curdes == keys.size - 1) {
             curdes = 0
         }
         else {
@@ -695,12 +712,8 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
         updateUI()
     }
 
-    private fun startMoveProccess() {
-        player.move(rooms[curdes].name)
-    }
-
     private fun updateUI() {
-        descLabel.text = "Current destination: ${rooms[curdes].name}"
+        itemLabel.text = "Current destination: ${keys[curdes].name}"
     }
 
     fun show() {
@@ -710,4 +723,4 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     fun hide() {
         frame.isVisible = false
     }
-}*/
+}
