@@ -433,7 +433,6 @@ class Player {
     private fun makeWindows() {
         mainWindow = MainWindow(this)
         roomWindow = RoomWindow(this, rooms)
-        keyWindow = KeyWindow(this, inventory)
     }
 
     fun showWindows() {
@@ -456,10 +455,21 @@ class Player {
                     travelWindow.hide()
                 }
                 else {
+                    keyWindow = KeyWindow(this, inventory)
                     keyWindow.show()
                 }
             }
         }
+    }
+
+    fun endMove() {
+        keyWindow.hide()
+        travelWindow.hide()
+        roomWindow.fixButton()
+    }
+
+    fun checkKey() {
+
     }
 }
 
@@ -575,6 +585,10 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         travelButton.isEnabled = true
     }
 
+    fun fixButton() {
+        travelButton.isEnabled = true
+    }
+
     fun show() {
         frame.isVisible = true
     }
@@ -637,6 +651,8 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
 
     private fun startMoveProccess() {
         player.move(rooms[curdes].name)
+        cycleButton.isEnabled = false
+        goButton.isEnabled = false
     }
 
     private fun updateUI() {
@@ -649,6 +665,8 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
 
     fun hide() {
         frame.isVisible = false
+        cycleButton.isEnabled = true
+        goButton.isEnabled = true
     }
 }
 
@@ -677,8 +695,8 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>) {
         infoLabel.setBounds(30, 10, 340, 70)
         itemLabel.setBounds(30, 50, 340, 70)
         cycleButton.setBounds(20, 100, 150, 30)
-        goButton.setBounds(20, 150, 150, 30)
-        stopButton.setBounds(20, 200, 150, 30)
+        goButton.setBounds(180, 100, 150, 30)
+        stopButton.setBounds(20, 150, 150, 30)
 
         panel.add(infoLabel)
         panel.add(itemLabel)
@@ -700,6 +718,8 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>) {
 
     private fun setupActions() {
         cycleButton.addActionListener { cycle() }
+        goButton.addActionListener { consume() }
+        stopButton.addActionListener { cancel() }
     }
 
     private fun cycle() {
@@ -712,8 +732,16 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>) {
         updateUI()
     }
 
+    private fun consume() {
+        player.checkKey()
+    }
+
+    private fun cancel() {
+        player.endMove()
+    }
+
     private fun updateUI() {
-        itemLabel.text = "Current destination: ${keys[curdes].name}"
+        itemLabel.text = "Item: ${keys[curdes].name}"
     }
 
     fun show() {
