@@ -65,6 +65,7 @@ class Item(
 class Player {
     var location = "Driveway"
     val inventory = mutableListOf<Item>()
+    val items = mutableListOf<Item>()
 
     val rooms: MutableList<Room> = mutableListOf()
 
@@ -103,7 +104,7 @@ class Player {
 
         val tree = Room("Oak Tree",
             "A large oak tree stands here, it's leafy branches extending high above.",
-            "Empty",
+            "After climbing up the tree, you fond a blue ball wedged in the branches!",
             "Empty",
             "Empty",
             "Empty",
@@ -167,20 +168,20 @@ class Player {
             "Torch")
 
         val basement = Room("Basement",
-            "A dark room that seems to have been forgotten long ago, cobwebs decorate the corners of the room, and there's barely anything stored here...",
+            "Once you fire a single shot with your trusty slingshot, the fiendish bat lets out a squeak and disappears through a crack in the ceiling, leaving the basement unguarded, a dark room that seems to have been forgotten long ago, cobwebs decorate the corners of the room, and there's barely anything stored here...",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "Basement Key",
+            "Torch",
+            "Slingshot",
+            "You try the trapdoor, but it's locked...",
+            "Entering the basement, you realize it's far too dark to see anything, and you can't seem to find a lightswitch...",
+            "The moment you turn on the torch a small blur flies towards you and attacks! After you've retreated, you peer back in and spy a small bat hanging in the corner. What is it with you and small, furry creatures today?",
             "Metal Detector(Empty)",
             "Empty",
             "Empty")
 
         val hall1 = Room("Downstairs Hallway",
-            "Halldesc",
+            "A hallway, with a really nice carpet, like, really nice, like you could probably walk back and forth on this carpet forever, it's that good!",
             "Empty",
             "Empty",
             "Empty",
@@ -193,46 +194,46 @@ class Player {
             "Empty")
 
         val livroom1 = Room("Downstairs Living Room",
-            "Livdesc",
+            "A cozy living room, a fire crackles away in a fireplace on one side of the room, while the other is lined with bookshelves, maybe you've got time to take a peek through one....",
+            "After a short bit of reading you feel ever so slightly more intelligent.",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
+            "Common Sense",
             "Empty",
             "Empty")
 
         val dinroom = Room("Dining Room",
-            "Dindesc",
+            "A long wooden table with a small fruit bowl stands in the center of the room, along the walls hang numerous paintings, one shows a view of a city at night, one shows a lady with a violin, and one shows a singular banana, curious.",
+            "Upon placing the banana in the fruit bowl, one of the paintings swing forwards, revealing a small safe set into the wall, unfortunately, you don't know the code for the safe, but there is a small key hanging beside it!",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty")
+            "Mousetrap",
+            "Banana",
+            "Locker Key")
 
         val kitchen = Room("Kitchen",
-            "Kitdesc",
+            "The kitchen, now freed from it's tiny tyrants, lies before you. Kitchens can't talk, but if they could, you feel like this one would be thanking you right now.",
             "Empty",
+            "Mousetrap",
+            "Cheese",
             "Empty",
+            "As you're about to step into the kitchen, you spot it, a mouse, it stares up at you, it's tiny eyes no doubt filled with burning hatred, you hastily close the door, there's no knowing what that thing may do to you if you're alone with it.",
+            "You've cleverly placed the mousetrap, but it doesn't have any bait...",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "Greenhouse Key",
             "Empty",
             "Empty")
 
         val pantry = Room("Pantry",
-            "pandesc",
+            "A quite frankly unreasonably large pantry, like seriously, how would you even manage to eat this much food?",
             "Empty",
             "Empty",
             "Empty",
@@ -241,11 +242,11 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty")
+            "Common Sense",
+            "Cheese")
 
         val bath1 = Room("Downstairs Bathroom",
-            "Bathdesc",
+            "A bathroom, not much to it, but there's a scented card on the door handle that smells really good.",
             "Empty",
             "Empty",
             "Empty",
@@ -258,7 +259,7 @@ class Player {
             "Empty")
 
         val laundry = Room("Laundry",
-            "Laundesc",
+            "he laundry is... Surprisingly cozy! A washing machine drones away... There are fluffy towels hung on the wall... And there's one of those de-humidifier thingies! Or maybe you're just weird.",
             "Empty",
             "Empty",
             "Empty",
@@ -266,12 +267,12 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty")
+            "Vacuum",
+            "Locker Key",
+            "Laundry Basket")
 
         val hall2 = Room("Upstairs Hallway",
-            "Halldesc",
+            "A hallway with a mediocre carpet.",
             "Empty",
             "Empty",
             "Empty",
@@ -284,20 +285,21 @@ class Player {
             "Empty")
 
         val livroom2 = Room("Upstairs Living Room",
-            "Livdesc",
+            "After getting rid of all that dust, the living room is quite nice! It's even got a balcony!",
+            "Empty",
+            "Vacuum",
             "Empty",
             "Empty",
+            "Upon entering the room you are met with a cloud of dust and immediately begin couching, every surface in the room is covered in piles of dust, you figure staying in this room any longer may be hazardous to your health, so you make a hasty exit.",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty")
+            "Guestroom Key",
+            "Handwritten Note",
+            "Binoculars")
 
         val bal1 = Room("Balcony",
             "Looking out from the balcony, a beautiful landscape stretches before you, a see of trees with leaves in shades of red and orange and purple. Up above, the clouds stretch across the sky towards the horizon, where a warm glow signals the end of the day, better get back to searching, before the owner gets back.",
+            "Looking through the binoculars, you spot something bright blue in the big oak tree in the garden!",
             "Empty",
             "Empty",
             "Empty",
@@ -305,12 +307,11 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty")
+            "Binoculars",
+            "Knowledge")
 
         val bath2 = Room("Upstairs Bathroom",
-            "Bathdesc",
+            "A bathroom, seeing yourself in the mirror you decide to play a short game of Rock Paper Scissors, unfortunately, you lose.",
             "Empty",
             "Empty",
             "Empty",
@@ -323,51 +324,51 @@ class Player {
             "Empty")
 
         val gamesroom = Room("Games Room",
-            "Gamedesc",
+            "While packing everything into the box, you find a Gameboy! It doesn't have a game in it though...",
+            "After shoving everything that was on the floor into the box, you can finally walk around, what a relief! As for the gamesroom itself, it has a pool table, a dart board, some beanbags and one of those fancy jukeboxes, among other things.",
+            "Cardboard Box",
             "Empty",
             "Empty",
+            "You enter the gamesroom, but are immediately blocked by a knee-deep sea of bard games, card games, ad other various items, rendering further progress into the room impossible.",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "AA Bateries",
             "Empty",
             "Empty")
 
         val guestroom = Room("Guest Room",
-            "Guestdesc",
+            "Upon entering the guestroom, you realize that it's frighteningly messy, in fact, it doesn't seem like it's been cleaned since someone last stayed here!",
+            "Empty",
+            "Guestroom Key",
             "Empty",
             "Empty",
+            "The door to the guestroom seems to be locked...",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "Handwritten Note",
             "Empty",
             "Empty")
 
         val bedroom = Room("Bedroom",
-            "Beddesc",
+            "Fortunately, with this laundry, you have official business in here, the room itself is surprisingly tidy, there are posters on the wall and a couple toys on the floor, but that's about it.",
+            "Empty",
+            "Laundry Basket",
             "Empty",
             "Empty",
+            "There's a piece of paper sellotaped to the door, it reads: ABSOLUTELY NO ENTRY (Unless on official business) in messy handwriting. Huh, guess you can't go in.",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "Slingshot",
             "Empty",
             "Empty")
 
         val bal2 = Room("Bedroom Balcony",
-            "Baldesc",
+            "The Garden stretches below you, the lawn still un-mowed, and behind you a door to the master bedroom!",
+            "Empty",
+            "Rusty Key",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "From the bedroom window, you might just be able to reach the balcony that connects to the master bedroom, but the window is locked...",
             "Empty",
             "Empty",
             "Empty",
@@ -375,36 +376,81 @@ class Player {
             "Empty")
 
         val mBedroom = Room("Master Bedroom",
-            "Beddesc",
+            "It only takes a moment for you to spot it, on a desk to the side of the room, a sticky note labelled: Shed Code.",
+            "Empty",
+            "HHAHAHAH YOU CANT GET IN",
             "Empty",
             "Empty",
+            "The door is locked, hopefully the combination for the padlock isn't in there... Hah... Wouldn't that be crazy.",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
+            "Sticky Note",
             "Empty",
             "Empty")
 
         val shed = Room("Shed",
             "At long, long last, you've found your way into the shed, and there, parked in the corner, A gleaming piece of machinery stands ready to be put into action. You've finally found the lawnmower.",
             "Empty",
+            "Sticky Note",
             "Empty",
+            "Empty",
+            "Upon approaching the shed, you notice a padlock with a combination lock, but you weren't told about any code... Maybe you can find some clues in the house.",
             "Empty",
             "Empty",
             "Lawnmower",
             "Empty",
-            "Empty",
-            "Empty",
-            "Empty",
             "Empty")
 
-        val test = Item("TestKey", "testdesc", true)
-        val failTest = Item("WrongKey", "testdesc", true)
+        val CS = Item("Common Sense", "Might come in handy one of these days.", true)
+        val vac = Item("Vacuum", "A vacuum in a mansion... Why is that familiar?", false)
+        val net = Item("Net","A net affixed to a long pole.", false)
+        val MT = Item("Mousetrap","Don't worry, it's a non-lethal one.", false)
+        val cheese = Item("Cheese","Don't eat it! What if you need it later?", false)
+        val BK = Item("Basement Key","A key to the basement, pretty self explanatory.", false)
+        val GRK = Item("Guestroom Key","A key to the guestroom, pretty self explanatory.", false)
+        val GHK = Item("Greenhouse Key","A key to the greenhouse, pretty self explanatory.", false)
+        val LK = Item("Locker Key","A key to a locker, pretty self explanatory.", true)
+        val RK = Item("Rusty Key","A key to the rusty, pretty self explanatory... Wait...", false)
+        val banana = Item("Banana","It's a banana.", false)
+        val note = Item("Handwritten Note","It reads as following: Thanks for having me! I left a gift in the upstairs livingroom!", false)
+        val binoculars = Item("Binoculars","These things are so cool.", false)
+        val knowledge = Item("Knowledge","You should check out that tree...", false)
+        val torch = Item("Torch","You get a sudden urge to shine it in your eyes.", false)
+        val LB = Item("Laundry Basket","While you're here, you could put these back were they belong.", false)
+        val ball = Item("Ball","You feel like you could throw this very high...", false)
+        val CB = Item("Cardboard Box","Though small, it looks like it could fit a lot.", false)
+        val AAB = Item("AA Batteries","You never seem to have enough of these...", false)
+        val sling = Item("Slingshot","You found the Fairy Slingshot! Wait, wrong game.", false)
+        val MDE = Item("Metal Detector(Empty)","For some reason, it runs on AA batteries.", false)
+        val MD = Item("Metal Detector","Well, it's on and beeping angrily at you.", false)
+        val sNote = Item("Sticky Note","It reads: Shed Code: 0001", false)
+        val LM = Item("Lawnmower","What are you doing reading this? Finish the game already!", false)
 
-        inventory.add(test)
-        inventory.add(failTest)
+        items.add(CS)
+        items.add(vac)
+        items.add(net)
+        items.add(MT)
+        items.add(cheese)
+        items.add(BK)
+        items.add(GRK)
+        items.add(GHK)
+        items.add(LK)
+        items.add(RK)
+        items.add(banana)
+        items.add(note)
+        items.add(binoculars)
+        items.add(knowledge)
+        items.add(torch)
+        items.add(LB)
+        items.add(ball)
+        items.add(CB)
+        items.add(AAB)
+        items.add(sling)
+        items.add(MDE)
+        items.add(MD)
+        items.add(sNote)
+        items.add(LM)
+
 
         rooms.add(driveway)
         rooms.add(garden)
