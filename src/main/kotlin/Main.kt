@@ -32,6 +32,9 @@ class Room(
     var lock: String,
     var lock2: String,
     var lock3: String,
+    var lockdes: String,
+    var lockdes2: String,
+    var lockdes3: String,
     var freeItem: String,
     var itemLock: String,
     var item: String,
@@ -50,6 +53,7 @@ class Room(
 class Item(
     val name: String,
     val description: String,
+    val reUsable: Boolean
 ) {
 
 }
@@ -72,49 +76,77 @@ class Player {
     init {
 
         val driveway = Room("Driveway",
-            "The mansion looms before you under a cloudy gray sky, a flattened cardboard box has found its way up onto the roof, where it lies, a blemish upon an otherwise spotless abode.",
+            "The mansion looms before you under a cloudy gray sky, a flattened cardboard box has found its way up onto the roof, where it lies, a blemish upon the otherwise magnificent architecture",
+            "The mansion looms before you under a night sky, its windows illuminated by a warm light from within.",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty")
+            "Empty",
+            "Ball",
+            "Cardboard Box")
 
         val garden = Room("Garden",
-            "Gardesc",
+            "A well kept garden surrounds a slightly overgrown lawn, that's why you're here, after all.",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty")
+            "Empty",
+            "Empty",
+            "Metal Detector",
+            "Rusty Key")
+
+        val tree = Room("Oak Tree",
+            "A large oak tree stands here, it's leafy branches extending high above.",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Knowledge",
+            "Ball")
 
         val pool = Room("Pool",
-            "Pooldesc",
+            "A tiled surface surrounds the water of the pool, looking closer, it seems that there's something glimmering at the bottom...",
+            "A tiled surface surrounds the water of the pool, which sits still and quiet.",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty")
+            "Empty",
+            "Net",
+            "Basement Key")
 
         val greenhouse = Room("Greenhouse",
-            "Greedesc",
+            "Inside the greenhouse, it's uncomfortably warm, various plants line the side of a path through the center, and towards the end, a large bunch of bananas!",
+            "Empty",
+            "Greenhouse Key",
             "Empty",
             "Empty",
+            "You try to turn the door handle, unfortunately, it seems to be locked...",
             "Empty",
             "Empty",
-            "Empty",
+            "Banana",
             "Empty",
             "Empty")
 
         val foyer = Room("Foyer",
-            "Foydesc",
+            "Standing in the foyer, it doesn't look like there's much here, just a coat rack in the corner and a staircase to the second floor.",
             "Empty",
-            "CoolKey",
+            "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -122,27 +154,36 @@ class Player {
             "Empty")
 
         val garage = Room("Garage",
-            "Gardesc",
+            "There's no way around it, the garage is a mess, all sorts of items line every wall, surely you can find something in here that will help you...",
+            "On closer inspection, there's a trapdoor in one corner, how interesting.",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty")
+            "Net",
+            "Locker Key",
+            "Torch")
 
         val basement = Room("Basement",
-            "Basdesc",
+            "A dark room that seems to have been forgotten long ago, cobwebs decorate the corners of the room, and there's barely anything stored here...",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Metal Detector(Empty)",
             "Empty",
             "Empty")
 
         val hall1 = Room("Downstairs Hallway",
             "Halldesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -159,10 +200,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val dinroom = Room("Dining Room",
             "Dindesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -179,10 +226,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val pantry = Room("Pantry",
             "pandesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -199,10 +252,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val laundry = Room("Laundry",
             "Laundesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -219,10 +278,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val livroom2 = Room("Upstairs Living Room",
             "Livdesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -239,10 +304,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val bath2 = Room("Upstairs Bathroom",
             "Bathdesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -259,10 +330,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val guestroom = Room("Guest Room",
             "Guestdesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -279,10 +356,16 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val bal2 = Room("Bedroom Balcony",
             "Baldesc",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -299,6 +382,9 @@ class Player {
             "Empty",
             "Empty",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
         val shed = Room("Shed",
@@ -309,14 +395,20 @@ class Player {
             "Empty",
             "Lawnmower",
             "Empty",
+            "Empty",
+            "Empty",
+            "Empty",
             "Empty")
 
-        val test = Item("Test", "testdesc")
+        val test = Item("TestKey", "testdesc", true)
+        val failTest = Item("WrongKey", "testdesc", true)
 
         inventory.add(test)
+        inventory.add(failTest)
 
         rooms.add(driveway)
         rooms.add(garden)
+        rooms.add(tree)
         rooms.add(pool)
         rooms.add(greenhouse)
         rooms.add(foyer)
@@ -346,7 +438,10 @@ class Player {
 
         garden.addDoor(driveway)
         garden.addDoor(shed)
+        garden.addDoor(tree)
         garden.addDoor(pool)
+
+        tree.addDoor(garden)
 
         pool.addDoor(garden)
         pool.addDoor(livroom1)
@@ -455,7 +550,7 @@ class Player {
                     travelWindow.hide()
                 }
                 else {
-                    keyWindow = KeyWindow(this, inventory)
+                    keyWindow = KeyWindow(this, inventory, room)
                     keyWindow.show()
                 }
             }
@@ -468,8 +563,20 @@ class Player {
         roomWindow.fixButton()
     }
 
-    fun checkKey() {
-
+    fun nextKey(target: Room) {
+        if (target.lock2 == "Empty") {
+            if (target.lock3 == "Empty") {
+                move(target.name)
+            }
+            else {
+                target.lock = target.lock3
+                target.lock3 = "Empty"
+            }
+        }
+        else {
+            target.lock = target.lock2
+            target.lock2 = "Empty"
+        }
     }
 }
 
@@ -595,12 +702,12 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
 }
 
 class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
-    var curdes = 0
+    var curDes = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val desLabel = JLabel("Current destination: ${rooms[curdes].name}")
+    private val desLabel = JLabel("Current destination: ${rooms[curDes].name}")
     private val cycleButton = JButton("Next Location")
     private val goButton = JButton("Go")
 
@@ -640,23 +747,23 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 
     private fun cycle() {
-        if (curdes == rooms.size - 1) {
-            curdes = 0
+        if (curDes == rooms.size - 1) {
+            curDes = 0
         }
         else {
-            curdes += 1
+            curDes += 1
         }
         updateUI()
     }
 
     private fun startMoveProccess() {
-        player.move(rooms[curdes].name)
+        player.move(rooms[curDes].name)
         cycleButton.isEnabled = false
         goButton.isEnabled = false
     }
 
     private fun updateUI() {
-        desLabel.text = "Current destination: ${rooms[curdes].name}"
+        desLabel.text = "Current destination: ${rooms[curDes].name}"
     }
 
     fun show() {
@@ -670,17 +777,18 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 }
 
-class KeyWindow(val player: Player, val keys: MutableList<Item>) {
-    var curdes = 0
+class KeyWindow(val player: Player, val keys: MutableList<Item>, val room: Room) {
+    var curItem = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val infoLabel = JLabel("What item will you use")
-    private val itemLabel = JLabel("Item: ${keys[curdes].name}")
+    private val infoLabel = JLabel("What item will you use?")
+    private val itemLabel = JLabel("Item: ${keys[curItem].name}")
     private val cycleButton = JButton("Next Item")
-    private val goButton = JButton("Use")
-    private val stopButton = JButton("Cancel")
+    private val useButton = JButton("Use")
+    private val cancelButton = JButton("Cancel")
+    private val failLabel = JLabel(" ")
 
     init {
         setupLayout()
@@ -695,14 +803,15 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>) {
         infoLabel.setBounds(30, 10, 340, 70)
         itemLabel.setBounds(30, 50, 340, 70)
         cycleButton.setBounds(20, 100, 150, 30)
-        goButton.setBounds(180, 100, 150, 30)
-        stopButton.setBounds(20, 150, 150, 30)
+        useButton.setBounds(180, 100, 150, 30)
+        cancelButton.setBounds(20, 150, 150, 30)
+        failLabel.setBounds(30, 170, 340, 70)
 
         panel.add(infoLabel)
         panel.add(itemLabel)
         panel.add(cycleButton)
-        panel.add(goButton)
-        panel.add(stopButton)
+        panel.add(useButton)
+        panel.add(cancelButton)
     }
 
     private fun setupStyles() {
@@ -718,30 +827,39 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>) {
 
     private fun setupActions() {
         cycleButton.addActionListener { cycle() }
-        goButton.addActionListener { consume() }
-        stopButton.addActionListener { cancel() }
+        useButton.addActionListener { checkKey() }
+        cancelButton.addActionListener { cancel() }
     }
 
     private fun cycle() {
-        if (curdes == keys.size - 1) {
-            curdes = 0
+        if (curItem == keys.size - 1) {
+            curItem = 0
         }
         else {
-            curdes += 1
+            curItem += 1
         }
         updateUI()
     }
 
-    private fun consume() {
-        player.checkKey()
+    private fun checkKey() {
+        if (room.lock == keys[curItem].name) {
+            player.nextKey(room)
+        }
+        else {
+            tellFail()
+        }
     }
 
     private fun cancel() {
         player.endMove()
     }
 
+    private fun tellFail() {
+        failLabel.text = "That item didn't seem to work..."
+    }
+
     private fun updateUI() {
-        itemLabel.text = "Item: ${keys[curdes].name}"
+        itemLabel.text = "Item: ${keys[curItem].name}"
     }
 
     fun show() {
