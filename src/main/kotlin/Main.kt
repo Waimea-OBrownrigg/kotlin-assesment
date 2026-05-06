@@ -66,6 +66,7 @@ class Player {
     var location = "Driveway"
     val inventory = mutableListOf<String>()
     val items = mutableListOf<Item>()
+    var inspectInventory = mutableListOf<Item>()
 
     val rooms: MutableList<Room> = mutableListOf()
 
@@ -73,6 +74,7 @@ class Player {
     lateinit var roomWindow: RoomWindow
     lateinit var travelWindow: TravelWindow
     lateinit var keyWindow: KeyWindow
+    lateinit var inspectWindow: InspectWindow
 
     init {
 
@@ -225,7 +227,7 @@ class Player {
             "Mousetrap",
             "Cheese",
             "Empty",
-            "As you're about to step into the kitchen, you spot it, a mouse, it stares up at you, it's tiny eyes no doubt filled with burning hatred, you hastily close the door, there's no knowing what that thing may do to you if you're alone with it.",
+            "As you're about to step into the kitchen, you spot it, a mouse, it stares up at you, it's tiny eyes no doubt filled with burning hatred, you hastily close the door, you can't go in the kitchen as long as that mouse is there.",
             "You've cleverly placed the mousetrap, but it doesn't have any bait...",
             "Empty",
             "Greenhouse Key",
@@ -582,18 +584,27 @@ class Player {
     }
 
     fun search(room: Room) {
+        if (room.freeItem == "Empty") {
+            roomWindow.failSearch()
+        }
+        else {
+            inventory.add(room.freeItem)
+            mainWindow.updateUI()
+            roomWindow.foundItem(room.freeItem)
+            room.freeItem = "Empty"
+        }
+    }
+
+    fun openInspectMenu() {
         for (item in items) {
-            if (item.name == room.freeItem) {
-                inventory.add(item.name)
-                mainWindow.updateUI()
-                room.freeItem = "Empty"
-                roomWindow.foundItem(item.name)
-                break
-            }
-            else {
-                roomWindow.failSearch()
+            for (invItem in inventory) {
+                if (invItem == item.name) {
+                    inspectInventory.add(item)
+                }
             }
         }
+        inspectWindow = InspectWindow(inspectInventory)
+        inspectWindow.show()
     }
 
     fun openTravelMenu(theCoolerRooms: MutableList<Room>) {
@@ -611,11 +622,16 @@ class Player {
                     travelWindow.hide()
                 }
                 else {
-                    keyWindow = KeyWindow(this, inventory, room)
+                    keyWindow = KeyWindow(this, inventory, room, true)
                     keyWindow.show()
                 }
             }
         }
+    }
+
+    fun openKeyWindow(room: Room) {
+        keyWindow = KeyWindow(this, inventory, room, false)
+        keyWindow.show()
     }
 
     fun endMove() {
@@ -632,12 +648,22 @@ class Player {
             else {
                 target.lock = target.lock3
                 target.lock3 = "Empty"
+                target.lockdes = target.lockdes3
             }
         }
         else {
             target.lock = target.lock2
             target.lock2 = "Empty"
+            target.lockdes = target.lockdes2
         }
+    }
+
+    fun getItem(target: Room) {
+        inventory.add(target.item)
+        mainWindow.updateUI()
+        roomWindow.foundItem(target.item)
+        target.itemLock = "Empty"
+        target.freeItem = "Empty"
     }
 }
 
@@ -651,13 +677,14 @@ class MainWindow(val player: Player) {
     private val panel = JPanel().apply { layout = null }
 
     private val titleLabel = JLabel("Current location: ${player.location}")
-
-    private val infoLabel = JLabel("Inventory:")
+    private val invLabel = JLabel("Inventory:")
+    private val inspectButton = JButton("Inspect")
 
     init {
         setupLayout()
         setupStyles()
         setupWindow()
+        setupActions()
         updateUI()
     }
 
@@ -665,15 +692,17 @@ class MainWindow(val player: Player) {
         panel.preferredSize = java.awt.Dimension(420, 150)
 
         titleLabel.setBounds(10, 0, 450, 30)
-        infoLabel.setBounds(30, 40, 340, 30)
+        invLabel.setBounds(30, 40, 340, 70)
+        inspectButton.setBounds(20, 100, 80, 30)
 
         panel.add(titleLabel)
-        panel.add(infoLabel)
+        panel.add(invLabel)
+        panel.add(inspectButton)
     }
 
     private fun setupStyles() {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 20)
-        infoLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
+        invLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
     private fun setupWindow() {
@@ -685,10 +714,20 @@ class MainWindow(val player: Player) {
         frame.setLocationRelativeTo(null)                   // Centre on the screen
     }
 
+    private fun setupActions() {
+        inspectButton.addActionListener { player.openInspectMenu() }
+    }
+
     fun updateUI() {
         inventory = player.inventory.joinToString()
         titleLabel.text = "Current location: ${player.location}"
-        infoLabel.text = "Inventory: ${inventory}"
+        invLabel.text = "<html><wrap>Inventory: ${inventory}<wrap><html>"
+        if (player.inventory.isNotEmpty()) {
+            inspectButton.isEnabled = true
+        }
+        else {
+            inspectButton.isEnabled = false
+        }
     }
 
     fun show() {
@@ -716,6 +755,7 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         setupStyles()
         setupWindow()
         setupActions()
+        updateUI()
     }
 
     private fun setupLayout() {
@@ -748,7 +788,7 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
 
     private fun setupActions() {
         searchButton.addActionListener { player.search(rooms[loc]) }
-        itemButton.addActionListener {}
+        itemButton.addActionListener { player.openKeyWindow(rooms[loc]) }
         travelButton.addActionListener { openTravelMenu() }
     }
 
@@ -866,13 +906,13 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 }
 
-class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Room) {
+class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Room, val door: Boolean) {
     var curItem = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val infoLabel = JLabel("<html><wrap>${room.lockdes}</wrap></html>")
+    private val infoLabel = JLabel("")
     private val keyLabel = JLabel("What item will you use?")
     private val itemLabel = JLabel("Item: ${keys[curItem]}")
     private val cycleButton = JButton("Next Item")
@@ -934,11 +974,19 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     }
 
     private fun checkKey() {
-        if (room.lock == keys[curItem]) {
-            player.nextKey(room)
+        if (door == true) {
+            if (room.lock == keys[curItem]) {
+                player.nextKey(room)
+            } else {
+                tellFail()
+            }
         }
         else {
-            tellFail()
+            if (room.itemLock == keys[curItem]) {
+                player.getItem(room)
+            } else {
+                tellFail()
+            }
         }
     }
 
@@ -951,7 +999,78 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     }
 
     private fun updateUI() {
+        if (door == true) {
+            itemLabel.text = "<html><wrap>${room.lockdes}</wrap></html>"
+        }
         itemLabel.text = "Item: ${keys[curItem]}"
+    }
+
+    fun show() {
+        frame.isVisible = true
+    }
+
+    fun hide() {
+        frame.isVisible = false
+    }
+}
+
+class InspectWindow(val inventory: MutableList<Item>) {
+    var curItem = 0
+
+    val frame = JFrame("Placeholder name")
+    private val panel = JPanel().apply { layout = null }
+
+    private val infoLabel = JLabel("<html><wrap>${inventory[curItem].description}</wrap></html>")
+    private val itemLabel = JLabel("Item: ${inventory[curItem].name}")
+    private val cycleButton = JButton("Next Item")
+
+    init {
+        setupLayout()
+        setupStyles()
+        setupWindow()
+        setupActions()
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(400, 110)
+
+        infoLabel.setBounds(160, 40, 210, 70)
+        itemLabel.setBounds(30, 0, 400, 70)
+        cycleButton.setBounds(20, 60, 70, 30)
+
+        panel.add(infoLabel)
+        panel.add(itemLabel)
+        panel.add(cycleButton)
+    }
+
+    private fun setupStyles() {
+        itemLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 22)
+    }
+
+    private fun setupWindow() {
+        frame.isResizable = false                           // Can't resize
+        frame.contentPane = panel                           // Define the main content
+        frame.pack()
+        frame.setLocationRelativeTo(null)                   // Centre on the screen
+    }
+
+    private fun setupActions() {
+        cycleButton.addActionListener { cycle() }
+    }
+
+    private fun cycle() {
+        if (curItem == inventory.size - 1) {
+            curItem = 0
+        }
+        else {
+            curItem += 1
+        }
+        updateUI()
+    }
+
+    private fun updateUI() {
+        infoLabel.text = "<html><wrap>${inventory[curItem].description}</wrap></html>"
+        itemLabel.text = "Item: ${inventory[curItem].name}"
     }
 
     fun show() {
