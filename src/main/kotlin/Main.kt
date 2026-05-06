@@ -474,6 +474,7 @@ class Player {
         rooms.add(bal1)
         rooms.add(bath2)
         rooms.add(guestroom)
+        rooms.add(gamesroom)
         rooms.add(bedroom)
         rooms.add(bal2)
         rooms.add(mBedroom)
@@ -578,21 +579,46 @@ class Player {
         roomWindow = RoomWindow(this, rooms)
     }
 
-    fun showWindows() {
+    private fun showWindows() {
         mainWindow.show()
         roomWindow.show()
     }
 
-    fun search(room: Room) {
-        if (room.freeItem == "Empty") {
+    fun search(target: Room) {
+        if (target.freeItem == "Empty") {
             roomWindow.failSearch()
         }
         else {
-            inventory.add(room.freeItem)
+            inventory.add(target.freeItem)
             mainWindow.updateUI()
-            roomWindow.foundItem(room.freeItem)
-            room.freeItem = "Empty"
+            roomWindow.foundItem(target.freeItem)
+            target.freeItem = "Empty"
+            if (target.item == "Empty") {
+                if (target.roomDescClear != "Empty") {
+                    target.roomDesc = target.roomDescClear
+                }
+            }
+            if (target.freeItem == "Lawnmower") {
+                rooms[1].itemLock = "Lawnmower"
+            }
+            roomWindow.updateUI()
+            keyWindow.hide()
         }
+    }
+
+    fun getItem(target: Room) {
+        inventory.add(target.item)
+        mainWindow.updateUI()
+        roomWindow.foundItem(target.item)
+        target.itemLock = "Empty"
+        target.item = "Empty"
+        if (target.freeItem == "Empty") {
+            if (target.roomDescClear != "Empty") {
+                target.roomDesc = target.roomDescClear
+            }
+        }
+        roomWindow.updateUI()
+        keyWindow.hide()
     }
 
     fun openInspectMenu() {
@@ -612,6 +638,11 @@ class Player {
         travelWindow.show()
     }
 
+    fun openKeyWindow(room: Room) {
+        keyWindow = KeyWindow(this, inventory, room, false)
+        keyWindow.show()
+    }
+
     fun move(destination: String) {
         for (room in rooms) {
             if (room.name == destination) {
@@ -620,6 +651,9 @@ class Player {
                     mainWindow.updateUI()
                     roomWindow.updateUI()
                     travelWindow.hide()
+                    if (location == "Bedroom Balcony") {
+                        rooms[23].lock = "Empty"
+                    }
                 }
                 else {
                     keyWindow = KeyWindow(this, inventory, room, true)
@@ -627,11 +661,6 @@ class Player {
                 }
             }
         }
-    }
-
-    fun openKeyWindow(room: Room) {
-        keyWindow = KeyWindow(this, inventory, room, false)
-        keyWindow.show()
     }
 
     fun endMove() {
@@ -655,15 +684,16 @@ class Player {
             target.lock = target.lock2
             target.lock2 = "Empty"
             target.lockdes = target.lockdes2
+            keyWindow.updateUI()
         }
     }
 
-    fun getItem(target: Room) {
-        inventory.add(target.item)
-        mainWindow.updateUI()
-        roomWindow.foundItem(target.item)
-        target.itemLock = "Empty"
-        target.freeItem = "Empty"
+    fun removeKey(target: Int) {
+        inventory.removeAt(target)
+    }
+
+    fun winConMet() {
+
     }
 }
 
@@ -816,7 +846,12 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         descLabel.text = "<html><wrap>${rooms[loc].roomDesc}</wrap></html>"
         travelButton.isEnabled = true
         searchButton.isEnabled = true
-        itemButton.isEnabled = true
+        if (player.inventory.isNotEmpty()) {
+            itemButton.isEnabled = true
+        }
+        else {
+            itemButton.isEnabled = false
+        }
     }
 
     fun fixButton() {
@@ -914,7 +949,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
 
     private val infoLabel = JLabel("")
     private val keyLabel = JLabel("What item will you use?")
-    private val itemLabel = JLabel("Item: ${keys[curItem]}")
+    private val itemLabel = JLabel("")
     private val cycleButton = JButton("Next Item")
     private val useButton = JButton("Use")
     private val cancelButton = JButton("Cancel")
@@ -925,6 +960,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         setupStyles()
         setupWindow()
         setupActions()
+        updateUI()
     }
 
     private fun setupLayout() {
@@ -944,6 +980,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         panel.add(cycleButton)
         panel.add(useButton)
         panel.add(cancelButton)
+        panel.add(failLabel)
     }
 
     private fun setupStyles() {
@@ -976,6 +1013,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     private fun checkKey() {
         if (door == true) {
             if (room.lock == keys[curItem]) {
+                player.removeKey(curItem)
                 player.nextKey(room)
             } else {
                 tellFail()
@@ -983,7 +1021,13 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         }
         else {
             if (room.itemLock == keys[curItem]) {
-                player.getItem(room)
+                if (keys[curItem] ==  "Lawnmower") {
+                    player.winConMet()
+                }
+                else {
+                    player.removeKey(curItem)
+                    player.getItem(room)
+                }
             } else {
                 tellFail()
             }
@@ -998,11 +1042,20 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         failLabel.text = "That item didn't seem to work..."
     }
 
-    private fun updateUI() {
+    fun updateUI() {
         if (door == true) {
-            itemLabel.text = "<html><wrap>${room.lockdes}</wrap></html>"
+            infoLabel.text = "<html><wrap>${room.lockdes}</wrap></html>"
         }
-        itemLabel.text = "Item: ${keys[curItem]}"
+        if (keys.size > 0) {
+            itemLabel.text = "Item: ${keys[curItem]}"
+            cycleButton.isEnabled = true
+            useButton.isEnabled = true
+        }
+        else {
+            itemLabel.text = "Your inventory is empty."
+            cycleButton.isEnabled = false
+            useButton.isEnabled = false
+        }
     }
 
     fun show() {
