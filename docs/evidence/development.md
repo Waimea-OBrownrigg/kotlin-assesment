@@ -40,6 +40,12 @@ Added a window that appears when a locked door is encountered, this allows you t
 
 ---
 
+## Date: 04/05/2026
+
+Filled in all of the variables required for the game to run.
+
+---
+
 ## Date: xx/xx/20xx
 
 Example description and notes. Example description and notes. Example description and notes. Example description and notes. Example description and notes. Example description and notes.

@@ -64,7 +64,7 @@ class Item(
  */
 class Player {
     var location = "Driveway"
-    val inventory = mutableListOf<Item>()
+    val inventory = mutableListOf<String>()
     val items = mutableListOf<Item>()
 
     val rooms: MutableList<Room> = mutableListOf()
@@ -422,7 +422,7 @@ class Player {
         val AAB = Item("AA Batteries","You never seem to have enough of these...", false)
         val sling = Item("Slingshot","You found the Fairy Slingshot! Wait, wrong game.", false)
         val MDE = Item("Metal Detector(Empty)","For some reason, it runs on AA batteries.", false)
-        val MD = Item("Metal Detector","Well, it's on and beeping angrily at you.", false)
+        val MD = Item("Metal Detector","Thanks to those betteries, it's now on and beeping angrily at you.", false)
         val sNote = Item("Sticky Note","It reads: Shed Code: 0001", false)
         val LM = Item("Lawnmower","What are you doing reading this? Finish the game already!", false)
 
@@ -581,6 +581,21 @@ class Player {
         roomWindow.show()
     }
 
+    fun search(room: Room) {
+        for (item in items) {
+            if (item.name == room.freeItem) {
+                inventory.add(item.name)
+                mainWindow.updateUI()
+                room.freeItem = "Empty"
+                roomWindow.foundItem(item.name)
+                break
+            }
+            else {
+                roomWindow.failSearch()
+            }
+        }
+    }
+
     fun openTravelMenu(theCoolerRooms: MutableList<Room>) {
         travelWindow = TravelWindow(this, theCoolerRooms)
         travelWindow.show()
@@ -632,6 +647,7 @@ class Player {
  */
 class MainWindow(val player: Player) {
     val frame = JFrame("Placeholder name")
+    var inventory = " "
     private val panel = JPanel().apply { layout = null }
 
     private val titleLabel = JLabel("Current location: ${player.location}")
@@ -670,8 +686,9 @@ class MainWindow(val player: Player) {
     }
 
     fun updateUI() {
+        inventory = player.inventory.joinToString()
         titleLabel.text = "Current location: ${player.location}"
-        infoLabel.text = "Inventory: ${player.inventory}"
+        infoLabel.text = "Inventory: ${inventory}"
     }
 
     fun show() {
@@ -688,7 +705,11 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
     private val panel = JPanel().apply { layout = null }
 
     private val travelButton = JButton("Move")
+    private val searchButton = JButton("Search")
+    private val itemButton = JButton("Use Item")
     private val descLabel = JLabel("<html><wrap>${rooms[loc].roomDesc}</wrap></html>")
+    private val resLabel = JLabel(" ")
+
 
     init {
         setupLayout()
@@ -701,10 +722,16 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
         descLabel.setBounds(30, 10, 340, 70)
-        travelButton.setBounds(20, 100, 100, 30)
+        searchButton.setBounds(20, 100, 100, 30)
+        itemButton.setBounds(150, 100, 100, 30)
+        travelButton.setBounds(20, 150, 100, 30)
+        resLabel.setBounds(20, 180, 340, 30)
 
         panel.add(descLabel)
+        panel.add(searchButton)
+        panel.add(itemButton)
         panel.add(travelButton)
+        panel.add(resLabel)
     }
 
     private fun setupStyles() {
@@ -720,12 +747,24 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 
     private fun setupActions() {
+        searchButton.addActionListener { player.search(rooms[loc]) }
+        itemButton.addActionListener {}
         travelButton.addActionListener { openTravelMenu() }
     }
 
     private fun openTravelMenu() {
         travelButton.isEnabled = false
+        searchButton.isEnabled = false
+        itemButton.isEnabled = false
         player.openTravelMenu(rooms[loc].adjacent)
+    }
+
+    fun failSearch() {
+        resLabel.text = "You couldn't find anything useful..."
+    }
+
+    fun foundItem(item: String) {
+        resLabel.text = "You found $item!"
     }
 
     fun updateUI() {
@@ -736,10 +775,14 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         }
         descLabel.text = "<html><wrap>${rooms[loc].roomDesc}</wrap></html>"
         travelButton.isEnabled = true
+        searchButton.isEnabled = true
+        itemButton.isEnabled = true
     }
 
     fun fixButton() {
         travelButton.isEnabled = true
+        searchButton.isEnabled = true
+        itemButton.isEnabled = true
     }
 
     fun show() {
@@ -823,14 +866,15 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 }
 
-class KeyWindow(val player: Player, val keys: MutableList<Item>, val room: Room) {
+class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Room) {
     var curItem = 0
 
     val frame = JFrame("Placeholder name")
     private val panel = JPanel().apply { layout = null }
 
-    private val infoLabel = JLabel("What item will you use?")
-    private val itemLabel = JLabel("Item: ${keys[curItem].name}")
+    private val infoLabel = JLabel("<html><wrap>${room.lockdes}</wrap></html>")
+    private val keyLabel = JLabel("What item will you use?")
+    private val itemLabel = JLabel("Item: ${keys[curItem]}")
     private val cycleButton = JButton("Next Item")
     private val useButton = JButton("Use")
     private val cancelButton = JButton("Cancel")
@@ -844,16 +888,18 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>, val room: Room)
     }
 
     private fun setupLayout() {
-        panel.preferredSize = java.awt.Dimension(400, 220)
+        panel.preferredSize = java.awt.Dimension(600, 250)
 
-        infoLabel.setBounds(30, 10, 340, 70)
-        itemLabel.setBounds(30, 50, 340, 70)
-        cycleButton.setBounds(20, 100, 150, 30)
-        useButton.setBounds(180, 100, 150, 30)
-        cancelButton.setBounds(20, 150, 150, 30)
-        failLabel.setBounds(30, 170, 340, 70)
+        infoLabel.setBounds(30, 0, 540, 70)
+        keyLabel.setBounds(30, 40, 340, 70)
+        itemLabel.setBounds(30, 60, 340, 70)
+        cycleButton.setBounds(20, 110, 150, 30)
+        useButton.setBounds(180, 110, 150, 30)
+        cancelButton.setBounds(20, 160, 150, 30)
+        failLabel.setBounds(30, 180, 340, 70)
 
         panel.add(infoLabel)
+        panel.add(keyLabel)
         panel.add(itemLabel)
         panel.add(cycleButton)
         panel.add(useButton)
@@ -888,7 +934,7 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>, val room: Room)
     }
 
     private fun checkKey() {
-        if (room.lock == keys[curItem].name) {
+        if (room.lock == keys[curItem]) {
             player.nextKey(room)
         }
         else {
@@ -905,7 +951,7 @@ class KeyWindow(val player: Player, val keys: MutableList<Item>, val room: Room)
     }
 
     private fun updateUI() {
-        itemLabel.text = "Item: ${keys[curItem].name}"
+        itemLabel.text = "Item: ${keys[curItem]}"
     }
 
     fun show() {
