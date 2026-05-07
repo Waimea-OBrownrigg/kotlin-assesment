@@ -79,3 +79,31 @@ Select the previous item on the first item in the list and the next item on the 
 The game should loop around to the other side of the list.
 
 ---
+
+## Reaching the end of a dialogue list (Boundary)
+
+Once you read the final line of dialogue in the list and press next, instead of looking for another line of dialogue it should close the window.
+
+### Test Data To Use
+
+Run through the intro.
+
+### Expected Test Result
+
+The game should start once the last continue button is pressed.
+
+---
+
+## Winning the game ()
+
+Once you collect the lawnmower, the lawn should allow you to use it as an item which wins the game.
+
+### Test Data To Use
+
+Grab the lawnmower from the shed and use it on the lawn
+
+### Expected Test Result
+
+Should open the ending dialogue.
+
+---

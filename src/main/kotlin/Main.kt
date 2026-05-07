@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * Programming Project for NCEA Level 3, Standard 91906
+ * ---------------------------------------------------------------------
+ * Project Name:   Escape Room
+ * Project Author: Oliver Brownrigg
+ * GitHub Repo:    https://github.com/Waimea-OBrownrigg/kotlin-assesment
+ * ---------------------------------------------------------------------
+ * Notes:
+ * PROJECT NOTES HERE
+ * =====================================================================
+ */
+
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import java.awt.Font
 import javax.swing.*
@@ -1243,6 +1256,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         // Checks if there are items in the player's inventory,
         // if there are none buttons are disabled, and vice versa.
         if (keys.size > 0) {
+            // Checks if curItem is out of bounds, because otherwise the window breaks.
             if (curItem > keys.size - 1) {
                 curItem = 0
             }
