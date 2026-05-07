@@ -1,14 +1,10 @@
-# PROJECT NAME HERE
+# Esape Room
 
-by YOUR NAME HERE
+by Oliver Brownrigg
 
 ## Project Description
 
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
-**PLACE YOUR PROJECT DESCRIPTION HERE**
+**A short game that involves finding items scattered throughout various rooms that are used to progress the game**
 
 ---
 
@@ -33,7 +29,5 @@ The project is written in the [Kotlin](https://kotlinlang.org) programming langu
 - Self-defined types
 - Using non-core API, library or framework
 - Using complex data structures (e.g. stacks, queues, trees)
-
-**EDIT LIST ABOVE TO MATCH YOUR PROJECT**
 
 

@@ -1,7 +1,7 @@
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
-import java.awt.Color
 import java.awt.Font
 import javax.swing.*
+import kotlin.system.exitProcess
 
 /**
  * Application entry point
@@ -9,7 +9,7 @@ import javax.swing.*
 fun main() {
     FlatMacDarkLaf.setup()          // Initialise the LAF
 
-    val player = Player() // Get an app state object
+    val player = Player()           // Get an app state object
 }
 
 /**
@@ -21,9 +21,13 @@ fun main() {
  *  @property lock, The item required to enter the room, if empty, no item is required
  *  @property lock2, The second item required to enter the room, if applicable
  *  @property lock3, The third item required to enter the room, if applicable
+ *  @property lock, A description that gives you information on what you need to enter a room
+ *  @property lock2, A description that replaces the first one if the second lock is being used
+ *  @property lock3, A description that replaces the second one if the third lock is being used
  *  @property freeItem, An item you get just for entering the room and searching
  *  @property itemLock, An item required to get the item in this room
  *  @property item, The item you receive for fulfilling the criteria of itemLock
+ *  @property adjacent, A list of places each room can travel to.
  */
 class Room(
     val name: String,
@@ -46,40 +50,49 @@ class Room(
     }
 }
 
-
 /**
- *
+ * This is where information about each item is kept.
  */
 class Item(
     val name: String,
     val description: String,
-    val reUsable: Boolean
-) {
-
-}
-
+) { }
 
 /**
+ * This class serves as a sort of central hub for the game.
+ * Important information and most of the functions are stored here.
  *
+ *  @property location, The room the player is currently in.
+ *  @property inventory, The items the player currently has access to.
+ *  @property items, All of the items in the game.
+ *  @property rooms, All of the rooms in the game.
+ *  @property inspectInventory, A special version of the inventory that includes descriptions for all the items.
+ *  @property inspectUsed, A variable that states whether the inspect menu has been used.
+ *  @property tutorialUsed, A variable that states whether the tutorial has been used.
  */
 class Player {
     var location = "Driveway"
     val inventory = mutableListOf<String>()
     val items = mutableListOf<Item>()
-    var inspectInventory = mutableListOf<Item>()
-
     val rooms: MutableList<Room> = mutableListOf()
+    var inspectInventory = mutableListOf<Item>()
+    var inspectUsed = false
+    var tutorialused = false
 
+    // With these vars, all functions can access these windows.
     lateinit var mainWindow: MainWindow
     lateinit var roomWindow: RoomWindow
     lateinit var travelWindow: TravelWindow
     lateinit var keyWindow: KeyWindow
     lateinit var inspectWindow: InspectWindow
+    lateinit var wordWindow: WordWindow
+    lateinit var tutorialWindow: TutorialWindow
 
+    //Creates all of the rooms and items, then adds them to their respective lists.
     init {
 
         val driveway = Room("Driveway",
-            "The mansion looms before you under a cloudy gray sky, a flattened cardboard box has found its way up onto the roof, where it lies, a blemish upon the otherwise magnificent architecture",
+            "The mansion looms before you under a cloudy gray sky, a flattened cardboard box has found its way up onto the roof, where it lies, a blemish upon the otherwise magnificent architecture, if only you could knock it down...",
             "The mansion looms before you under a night sky, its windows illuminated by a warm light from within.",
             "Empty",
             "Empty",
@@ -157,8 +170,8 @@ class Player {
             "Empty")
 
         val garage = Room("Garage",
-            "There's no way around it, the garage is a mess, all sorts of items line every wall, surely you can find something in here that will help you...",
-            "On closer inspection, there's a trapdoor in one corner, how interesting.",
+            "The garage is filled with all sorts of junk, lockers and bikes line one wall, A staircase leading down takes up another, and various fishing and golf equipment clutter up the last side, only the place reserved for a car is empty.",
+            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -170,17 +183,17 @@ class Player {
             "Torch")
 
         val basement = Room("Basement",
-            "Once you fire a single shot with your trusty slingshot, the fiendish bat lets out a squeak and disappears through a crack in the ceiling, leaving the basement unguarded, a dark room that seems to have been forgotten long ago, cobwebs decorate the corners of the room, and there's barely anything stored here...",
-            "Empty",
+            "Once you fire a single shot with your trusty slingshot, the fiendish bat lets out a squeak and disappears through a crack in the ceiling, leaving the basement unguarded. There's a metal detector in the corner, but it's flat, and for some reason, it seems to run on AA batteries...",
+            "This place is creepy...",
             "Basement Key",
             "Torch",
             "Slingshot",
             "You try the trapdoor, but it's locked...",
             "Entering the basement, you realize it's far too dark to see anything, and you can't seem to find a lightswitch...",
             "The moment you turn on the torch a small blur flies towards you and attacks! After you've retreated, you peer back in and spy a small bat hanging in the corner. What is it with you and small, furry creatures today?",
-            "Metal Detector(Empty)",
             "Empty",
-            "Empty")
+            "AA Batteries",
+            "Metal Detector")
 
         val hall1 = Room("Downstairs Hallway",
             "A hallway, with a really nice carpet, like, really nice, like you could probably walk back and forth on this carpet forever, it's that good!",
@@ -210,7 +223,7 @@ class Player {
 
         val dinroom = Room("Dining Room",
             "A long wooden table with a small fruit bowl stands in the center of the room, along the walls hang numerous paintings, one shows a view of a city at night, one shows a lady with a violin, and one shows a singular banana, curious.",
-            "Upon placing the banana in the fruit bowl, one of the paintings swing forwards, revealing a small safe set into the wall, unfortunately, you don't know the code for the safe, but there is a small key hanging beside it!",
+            "Upon placing the banana in the fruit bowl, one of the paintings swings forwards, revealing a small safe set into the wall, unfortunately, you don't know the code for the safe, but there is a small key hanging beside it!",
             "Empty",
             "Empty",
             "Empty",
@@ -235,8 +248,8 @@ class Player {
             "Empty")
 
         val pantry = Room("Pantry",
+            "There's so much food in here, if only you knew what to pick...",
             "A quite frankly unreasonably large pantry, like seriously, how would you even manage to eat this much food?",
-            "Empty",
             "Empty",
             "Empty",
             "Empty",
@@ -261,7 +274,7 @@ class Player {
             "Empty")
 
         val laundry = Room("Laundry",
-            "he laundry is... Surprisingly cozy! A washing machine drones away... There are fluffy towels hung on the wall... And there's one of those de-humidifier thingies! Or maybe you're just weird.",
+            "The laundry is... Surprisingly cozy! A washing machine drones away... There are fluffy towels hung on the wall... And there's one of those de-humidifier thingies! Or maybe you're just weird.",
             "Empty",
             "Empty",
             "Empty",
@@ -270,7 +283,7 @@ class Player {
             "Empty",
             "Empty",
             "Vacuum",
-            "Locker Key",
+            "Reminder Note",
             "Laundry Basket")
 
         val hall2 = Room("Upstairs Hallway",
@@ -314,27 +327,27 @@ class Player {
 
         val bath2 = Room("Upstairs Bathroom",
             "A bathroom, seeing yourself in the mirror you decide to play a short game of Rock Paper Scissors, unfortunately, you lose.",
+            "After you finished being distracted by your reflection, you noticed a note to the side of the mirror!",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
             "Empty",
-            "Empty",
-            "Empty",
+            "Reminder Note",
             "Empty",
             "Empty")
 
         val gamesroom = Room("Games Room",
-            "While packing everything into the box, you find a Gameboy! It doesn't have a game in it though...",
+            "While packing everything into the box, you find a Gameboy! It has some batteries in it, those could be usefull...",
             "After shoving everything that was on the floor into the box, you can finally walk around, what a relief! As for the gamesroom itself, it has a pool table, a dart board, some beanbags and one of those fancy jukeboxes, among other things.",
             "Cardboard Box",
             "Empty",
             "Empty",
-            "You enter the gamesroom, but are immediately blocked by a knee-deep sea of bard games, card games, ad other various items, rendering further progress into the room impossible.",
+            "You enter the gamesroom, but are immediately blocked by a knee-deep sea of bard games, card games, ad other various items, rendering further progress into the room impossible. Where do they even put all this stuff when it's tidy?",
             "Empty",
             "Empty",
-            "AA Bateries",
+            "AA Batteries",
             "Empty",
             "Empty")
 
@@ -403,30 +416,30 @@ class Player {
             "Empty",
             "Empty")
 
-        val CS = Item("Common Sense", "Might come in handy one of these days.", true)
-        val vac = Item("Vacuum", "A vacuum in a mansion... Why is that familiar?", false)
-        val net = Item("Net","A net affixed to a long pole.", false)
-        val MT = Item("Mousetrap","Don't worry, it's a non-lethal one.", false)
-        val cheese = Item("Cheese","Don't eat it! What if you need it later?", false)
-        val BK = Item("Basement Key","A key to the basement, pretty self explanatory.", false)
-        val GRK = Item("Guestroom Key","A key to the guestroom, pretty self explanatory.", false)
-        val GHK = Item("Greenhouse Key","A key to the greenhouse, pretty self explanatory.", false)
-        val LK = Item("Locker Key","A key to a locker, pretty self explanatory.", true)
-        val RK = Item("Rusty Key","A key to the rusty, pretty self explanatory... Wait...", false)
-        val banana = Item("Banana","It's a banana.", false)
-        val note = Item("Handwritten Note","It reads as following: Thanks for having me! I left a gift in the upstairs livingroom!", false)
-        val binoculars = Item("Binoculars","These things are so cool.", false)
-        val knowledge = Item("Knowledge","You should check out that tree...", false)
-        val torch = Item("Torch","You get a sudden urge to shine it in your eyes.", false)
-        val LB = Item("Laundry Basket","While you're here, you could put these back were they belong.", false)
-        val ball = Item("Ball","You feel like you could throw this very high...", false)
-        val CB = Item("Cardboard Box","Though small, it looks like it could fit a lot.", false)
-        val AAB = Item("AA Batteries","You never seem to have enough of these...", false)
-        val sling = Item("Slingshot","You found the Fairy Slingshot! Wait, wrong game.", false)
-        val MDE = Item("Metal Detector(Empty)","For some reason, it runs on AA batteries.", false)
-        val MD = Item("Metal Detector","Thanks to those betteries, it's now on and beeping angrily at you.", false)
-        val sNote = Item("Sticky Note","It reads: Shed Code: 0001", false)
-        val LM = Item("Lawnmower","What are you doing reading this? Finish the game already!", false)
+        val CS = Item("Common Sense", "Might come in handy one of these days.")
+        val vac = Item("Vacuum", "A vacuum in a mansion... Why is that familiar?")
+        val net = Item("Net","A net affixed to a long pole.")
+        val MT = Item("Mousetrap","Don't worry, it's a non-lethal one.")
+        val cheese = Item("Cheese","Don't eat it! What if you need it later?")
+        val BK = Item("Basement Key","A key to the basement, pretty self explanatory.")
+        val GRK = Item("Guestroom Key","A key to the guestroom, pretty self explanatory.")
+        val GHK = Item("Greenhouse Key","A key to the greenhouse, pretty self explanatory.")
+        val LK = Item("Locker Key","A key to a locker, pretty self explanatory.")
+        val RK = Item("Rusty Key","A key to the rusty, pretty self explanatory... Wait...")
+        val banana = Item("Banana","It's a banana.")
+        val note = Item("Handwritten Note","It reads as following: Thanks for having me! I left a gift in the upstairs livingroom!")
+        val binoculars = Item("Binoculars","These things are so cool.")
+        val knowledge = Item("Knowledge","You should check out that tree...")
+        val torch = Item("Torch","You get a sudden urge to shine it in your eyes.")
+        val RN = Item("Reminder Note", "It reads: Don't forget! Take clothes out of dryer.")
+        val LB = Item("Laundry Basket","While you're here, you could put these back were they belong.")
+        val ball = Item("Ball","You feel like you could throw this very high...")
+        val CB = Item("Cardboard Box", "Though small, it looks like it could fit a lot.")
+        val AAB = Item("AA Batteries","You never seem to have enough of these...")
+        val sling = Item("Slingshot","You found the Fairy Slingshot! Wait, wrong game.")
+        val MD = Item("Metal Detector","It's beeping angrily at you.")
+        val sNote = Item("Sticky Note","It reads: Shed Code: 0001")
+        val LM = Item("Lawnmower","What are you doing reading this? Finish the game already!")
 
         items.add(CS)
         items.add(vac)
@@ -443,12 +456,12 @@ class Player {
         items.add(binoculars)
         items.add(knowledge)
         items.add(torch)
+        items.add(RN)
         items.add(LB)
         items.add(ball)
         items.add(CB)
         items.add(AAB)
         items.add(sling)
-        items.add(MDE)
         items.add(MD)
         items.add(sNote)
         items.add(LM)
@@ -570,48 +583,71 @@ class Player {
         shed.addDoor(garden)
 
 
-        makeWindows()
-        showWindows()
+        intro()
     }
 
+    // Runs the intro, before starting the game.
+    private fun intro() {
+        val tutorialDialogue = mutableListOf("You've just arrived for the first day of your new job! You were hired at a house a couple minutes out of town to maintain the garden, upon arriving, the owner greets you.", "Why hello there! I'm Mr Coleman, but please, call me Riley, and you must be my new hire!", "To be honest, I almost forgot you were coming! I'm the type of person who has to write down all of his codes and passwords, else I'll forget them!", "Anyway, since it's your first day, we'll keep it simple, the lawn's a little overgrown, so it would be good if you were to mow it.", "Perfect! Well, no one is going to be home unfortunately, we're all going out to dinner, but I'm confident you can handle yourself! Good Luck!")
+        wordWindow = WordWindow(false, tutorialDialogue)
+        wordWindow.show()
+        //Checks to see if the player has finished reading.
+        while (true) {
+            print("If this line isn't here my code breaks.")
+            if (wordWindow.complete == true) {
+                break
+            }
+        }
+        makeWindows()
+    }
+
+    // Creates the two permanent windows.
     private fun makeWindows() {
         mainWindow = MainWindow(this)
         roomWindow = RoomWindow(this, rooms)
-    }
-
-    private fun showWindows() {
         mainWindow.show()
         roomWindow.show()
+        wordWindow.hide()
     }
 
+    // Gives the player an item for looking in certain rooms.
+    // target = Room that the item is in.
     fun search(target: Room) {
+        // Checks if there is actually an item in the room.
         if (target.freeItem == "Empty") {
             roomWindow.failSearch()
         }
+        // Gives the player the item, updates necessary windows, and removes the item from the room.
         else {
             inventory.add(target.freeItem)
             mainWindow.updateUI()
             roomWindow.foundItem(target.freeItem)
+            // Usually a room can only have one itemLock, so to use the lawnmower on the garden and beat the game,
+            // I have to replace the last itemLock
+            if (target.freeItem == "Lawnmower") {
+                rooms[1].itemLock = "Lawnmower"
+            }
             target.freeItem = "Empty"
+            // If the room has no items left, an alternate description is sometimes applied.
             if (target.item == "Empty") {
                 if (target.roomDescClear != "Empty") {
                     target.roomDesc = target.roomDescClear
                 }
-            }
-            if (target.freeItem == "Lawnmower") {
-                rooms[1].itemLock = "Lawnmower"
             }
             roomWindow.updateUI()
             keyWindow.hide()
         }
     }
 
+    // Gives the player an item, in this case when the player used a different item to unlock.
+    // target = Room that the item is in.
     fun getItem(target: Room) {
         inventory.add(target.item)
         mainWindow.updateUI()
         roomWindow.foundItem(target.item)
         target.itemLock = "Empty"
         target.item = "Empty"
+        // If the room has no items left, an alternate description is sometimes applied.
         if (target.freeItem == "Empty") {
             if (target.roomDescClear != "Empty") {
                 target.roomDesc = target.roomDescClear
@@ -621,6 +657,7 @@ class Player {
         keyWindow.hide()
     }
 
+    // Updates inspectInventory, then passes it to the inspect window.
     fun openInspectMenu() {
         for (item in items) {
             for (invItem in inventory) {
@@ -631,30 +668,47 @@ class Player {
         }
         inspectWindow = InspectWindow(inspectInventory)
         inspectWindow.show()
+        inspectUsed = true
     }
 
+    // Opens the movement window.
+    // theCoolerRooms = Rooms you can currently travel to.
     fun openTravelMenu(theCoolerRooms: MutableList<Room>) {
         travelWindow = TravelWindow(this, theCoolerRooms)
         travelWindow.show()
     }
 
+    // Opens the key window.
     fun openKeyWindow(room: Room) {
         keyWindow = KeyWindow(this, inventory, room, false)
         keyWindow.show()
     }
 
+    //opens the tutorial window.
+    fun openTutorial() {
+        val tutorialDialogue = mutableListOf("Hi there! It seems you might be a little confused on what to do, don't worry, it's not too hard to get the hang of!", "This game is essentially an escape room, you will collect items and use them to unlock rooms and progress the game.", "First, let's talk about movement!", "To move around, simply press the move button on the room window!", "Great, now you should have a new window called movement, there are four buttons here.", "The first two are linked, next and back both cycle though the list of places that you can go to.", "The next is Cancel, this ends the operation.", "And finally, we have Go, which takes you to the place that is selected.", "This button layout is used widely throughout the game, so make sure to familiarize yourself with it.", "If you try to move into certain rooms, you may find they are locked, this will bring up another window that asks you to select and use an item to gain access to the room.", "To get items, there are two methods.", "You can search using the button labelled as such on the room window.", "Or you can use an item by pressing the use item button on the room window", "This brings up another item select screen.", "Keep in mind, any items you use will be removed from your inventory!", "To figure out what item goes where, press the inspect button on the player info page. (You may only do this if there is an item in your inventory.)", "This brings up a menu with short descriptions for all of the items, some of which contain clues!", "Reading room descriptions, and even trying to enter locked rooms can also give you hints.", "That should about do it for this tutorial, have fun!")
+        tutorialWindow = TutorialWindow(tutorialDialogue)
+        tutorialWindow.show()
+        tutorialused = true
+    }
+
+    // moves the player to a new room.
     fun move(destination: String) {
+        // Checks which room you're going to
         for (room in rooms) {
             if (room.name == destination) {
+                // Checks if the room is locked
                 if (room.lock == "Empty") {
                     location = destination
                     mainWindow.updateUI()
                     roomWindow.updateUI()
                     travelWindow.hide()
+                    keyWindow.hide()
                     if (location == "Bedroom Balcony") {
                         rooms[23].lock = "Empty"
                     }
                 }
+                //opens key window.
                 else {
                     keyWindow = KeyWindow(this, inventory, room, true)
                     keyWindow.show()
@@ -663,23 +717,35 @@ class Player {
         }
     }
 
-    fun endMove() {
-        keyWindow.hide()
+    // Hides windows no longer needed and re-enables the buttons on roomWindow.
+    // keyWExists = whether or not keyWindow has to be hidden.
+    fun endMove(keyWExists: Boolean) {
+        if (keyWExists == true) {
+            keyWindow.hide()
+        }
         travelWindow.hide()
         roomWindow.fixButton()
     }
 
+    // Some doors require multiple items to open, this function handles the change from one lock to another.
+    // target = Room that requires it's locks changed
     fun nextKey(target: Room) {
+        // Checks if there is a second lock, then if there is a third lock, if there are neither, the player can move.
         if (target.lock2 == "Empty") {
             if (target.lock3 == "Empty") {
                 move(target.name)
             }
+            // If the second lock is empty but there is a third lock
+            // (occurs when there was previously a second lock that has now been satisfied.)
+            // this will apply the third lock to the door.
             else {
                 target.lock = target.lock3
                 target.lock3 = "Empty"
                 target.lockdes = target.lockdes3
+                keyWindow.updateUI()
             }
         }
+        // If there is a second lock, this will apply it to the door.
         else {
             target.lock = target.lock2
             target.lock2 = "Empty"
@@ -688,27 +754,49 @@ class Player {
         }
     }
 
+    // Removes an item from the players inventory once it has been used.
+    // target = item in list that needs removing.
     fun removeKey(target: Int) {
         inventory.removeAt(target)
+        mainWindow.updateUI()
     }
 
+    // Hides all windows and shows the end dialogue.
     fun winConMet() {
-
+        mainWindow.hide()
+        roomWindow.hide()
+        travelWindow.hide()
+        keyWindow.hide()
+        if (inspectUsed == true) {
+            inspectWindow.hide()
+        }
+        if (tutorialused == true) {
+            tutorialWindow.hide()
+        }
+        val winDialogue = mutableListOf("Well, after all that time, you finally managed to mow the lawn, meaning you can finally go home.", "As you get back in your car and begin the drive home you are filled with an immense sense of satisfaction.", "Congratulations, you finished the game!")
+        wordWindow = WordWindow(true, winDialogue)
+        wordWindow.show()
     }
 }
 
 
 /**
- * Player's UI window, shows current location and inventory
+ * Player window, shows current location and inventory.
+ * Lets the player inspect items, and has access to the tutorial.
  */
 class MainWindow(val player: Player) {
-    val frame = JFrame("Placeholder name")
+    val frame = JFrame("Player Info")
     var inventory = " "
     private val panel = JPanel().apply { layout = null }
 
+    // Every window has a titleLabel, it's what appears at the top of the window.
     private val titleLabel = JLabel("Current location: ${player.location}")
+    // Shows the items in the player's inventory.
     private val invLabel = JLabel("Inventory:")
+    // Button that opens the inspect menu.
     private val inspectButton = JButton("Inspect")
+    // Button that opens the tutorial.
+    private val tutorialButton = JButton("Help")
 
     init {
         setupLayout()
@@ -718,40 +806,49 @@ class MainWindow(val player: Player) {
         updateUI()
     }
 
+    // Most of these functions are in every window.
+    // Arranges all of the text and buttons on the window.
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(420, 150)
 
         titleLabel.setBounds(10, 0, 450, 30)
         invLabel.setBounds(30, 40, 340, 70)
         inspectButton.setBounds(20, 100, 80, 30)
+        tutorialButton.setBounds(120, 100, 80, 30)
 
         panel.add(titleLabel)
         panel.add(invLabel)
         panel.add(inspectButton)
+        panel.add(tutorialButton)
     }
 
+    // Just adjusts text.
     private fun setupStyles() {
         titleLabel.font = Font(Font.SANS_SERIF, Font.BOLD, 20)
         invLabel.font = Font(Font.SANS_SERIF, Font.PLAIN, 11)
     }
 
+    // Gives each window certain properties.
     private fun setupWindow() {
-        frame.isResizable = false                           // Can't resize
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE  // Exit upon window close
-        frame.contentPane = panel                           // Define the main content
-
+        frame.isResizable = false
+        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        frame.contentPane = panel
         frame.pack()
-        frame.setLocationRelativeTo(null)                   // Centre on the screen
+        frame.setLocationRelativeTo(null)
     }
 
+    // Connects each button to a function.
     private fun setupActions() {
         inspectButton.addActionListener { player.openInspectMenu() }
+        tutorialButton.addActionListener { openTutorial() }
     }
 
+    // Updates the visual appearance of the window, depending on certain values.
     fun updateUI() {
         inventory = player.inventory.joinToString()
         titleLabel.text = "Current location: ${player.location}"
         invLabel.text = "<html><wrap>Inventory: ${inventory}<wrap><html>"
+        // Stops the player inspecting if there is nothing in their inventory.
         if (player.inventory.isNotEmpty()) {
             inspectButton.isEnabled = true
         }
@@ -760,25 +857,43 @@ class MainWindow(val player: Player) {
         }
     }
 
+    // Shows the window.
     fun show() {
         frame.isVisible = true
+    }
+
+    // Hides the window.
+    fun hide() {
+        frame.isVisible = false
+    }
+
+    // Calls the function that opens the tutorial.
+    fun openTutorial() {
+        player.openTutorial()
     }
 }
 
 /**
- * Room UI window, gives a description and shows the rooms you can travel to
+ * Room window, gives a description of the room.
+ * Lets you open the travel menu, search for items, and use them.
+ *  @property loc, The index of the room the player is in.
+ *  @property rooms, The list of rooms.
  */
 class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
     var loc = 0
-    val frame = JFrame("Placeholder name")
+    val frame = JFrame("Room")
     private val panel = JPanel().apply { layout = null }
 
+    // Button that opens the move menu
     private val travelButton = JButton("Move")
+    // Button that gives the player an item. (If applicable.)
     private val searchButton = JButton("Search")
+    // Opens the menu to use an item to obtain a different item.
     private val itemButton = JButton("Use Item")
+    // Describes the room
     private val descLabel = JLabel("<html><wrap>${rooms[loc].roomDesc}</wrap></html>")
+    // Tells you the last item you found/if there was nothing in the room.
     private val resLabel = JLabel(" ")
-
 
     init {
         setupLayout()
@@ -809,11 +924,11 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 
     private fun setupWindow() {
-        frame.isResizable = false                           // Can't resize
-        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE  // Exit upon window close
-        frame.contentPane = panel                           // Define the main content
+        frame.isResizable = false
+        frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        frame.contentPane = panel
         frame.pack()
-        frame.setLocationRelativeTo(null)                   // Centre on the screen
+        frame.setLocationRelativeTo(null)
     }
 
     private fun setupActions() {
@@ -822,6 +937,7 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         travelButton.addActionListener { openTravelMenu() }
     }
 
+    // Disables buttons and calls the function that opens the travel menu.
     private fun openTravelMenu() {
         travelButton.isEnabled = false
         searchButton.isEnabled = false
@@ -829,15 +945,19 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         player.openTravelMenu(rooms[loc].adjacent)
     }
 
+    // Tells the player if there's nothing in the room.
     fun failSearch() {
         resLabel.text = "You couldn't find anything useful..."
     }
 
+    // Tells the player what item they found.
     fun foundItem(item: String) {
         resLabel.text = "You found $item!"
     }
 
+    // Updates the visual appearance of the window.
     fun updateUI() {
+        // Checks what room the player is in.
         for (room in rooms) {
             if (room.name == player.location) {
                 loc = rooms.indexOf(room)
@@ -846,6 +966,7 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         descLabel.text = "<html><wrap>${rooms[loc].roomDesc}</wrap></html>"
         travelButton.isEnabled = true
         searchButton.isEnabled = true
+        // Checks whether the player has any items to use.
         if (player.inventory.isNotEmpty()) {
             itemButton.isEnabled = true
         }
@@ -854,6 +975,7 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
         }
     }
 
+    // Enables all of the buttons
     fun fixButton() {
         travelButton.isEnabled = true
         searchButton.isEnabled = true
@@ -863,16 +985,30 @@ class RoomWindow(val player: Player, val rooms: MutableList<Room>) {
     fun show() {
         frame.isVisible = true
     }
+
+    fun hide() {
+        frame.isVisible = false
+    }
 }
 
+/**
+ * Movement window, Lets the player choose a room and go there.
+ *  @property curDes, The index of the room the player wants to travel to.
+ *  @property rooms, The list of rooms that the player can travel to.
+ */
 class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     var curDes = 0
 
-    val frame = JFrame("Placeholder name")
+    val frame = JFrame("Movement")
     private val panel = JPanel().apply { layout = null }
-
+    // Shows the current destination.
     private val desLabel = JLabel("Current destination: ${rooms[curDes].name}")
-    private val cycleButton = JButton("Next Location")
+    // Lets the player select a room.
+    private val cycleUpButton = JButton("Next")
+    private val cycleDownButton = JButton("Back")
+    // Cancels movement.
+    private val cancelButton = JButton("Cancel")
+    // Moves the player.
     private val goButton = JButton("Go")
 
     init {
@@ -886,12 +1022,16 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
         panel.preferredSize = java.awt.Dimension(400, 220)
 
         desLabel.setBounds(30, 10, 340, 70)
-        cycleButton.setBounds(20, 100, 150, 30)
+        cycleUpButton.setBounds(20, 100, 110, 30)
+        cycleDownButton.setBounds(145, 100, 110, 30)
+        cancelButton.setBounds(270, 100, 110, 30)
         goButton.setBounds(20, 150, 150, 30)
 
         panel.add(desLabel)
-        panel.add(cycleButton)
+        panel.add(cycleUpButton)
+        panel.add(cycleDownButton)
         panel.add(goButton)
+        panel.add(cancelButton)
     }
 
     private fun setupStyles() {
@@ -899,18 +1039,22 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     }
 
     private fun setupWindow() {
-        frame.isResizable = false                           // Can't resize
-        frame.contentPane = panel                           // Define the main content
+        frame.isResizable = false
+        frame.contentPane = panel
         frame.pack()
-        frame.setLocationRelativeTo(null)                   // Centre on the screen
+        frame.setLocationRelativeTo(null)
     }
 
     private fun setupActions() {
-        cycleButton.addActionListener { cycle() }
+        cycleUpButton.addActionListener { cycleUp() }
+        cycleDownButton.addActionListener { cycleDown() }
+        cancelButton.addActionListener { cancel() }
         goButton.addActionListener { startMoveProccess() }
     }
 
-    private fun cycle() {
+    // selects the next room in the list.
+    private fun cycleUp() {
+        // Loops the list if the player reaches the end.
         if (curDes == rooms.size - 1) {
             curDes = 0
         }
@@ -920,12 +1064,33 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
         updateUI()
     }
 
-    private fun startMoveProccess() {
-        player.move(rooms[curDes].name)
-        cycleButton.isEnabled = false
-        goButton.isEnabled = false
+    // selects the previous room in the list.
+    private fun cycleDown() {
+        // Loops the list if the player reaches teh end.
+        if (curDes == 0) {
+            curDes = rooms.size - 1
+        }
+        else {
+            curDes -= 1
+        }
+        updateUI()
     }
 
+    // Calls the function that moves the player and dissables buttons.
+    private fun startMoveProccess() {
+        player.move(rooms[curDes].name)
+        cycleUpButton.isEnabled = false
+        cycleDownButton.isEnabled = false
+        goButton.isEnabled = false
+        cancelButton.isEnabled = false
+    }
+
+    // Cancels movement
+    private fun cancel() {
+        player.endMove(false)
+    }
+
+    // updates the visual appearance of the window.
     private fun updateUI() {
         desLabel.text = "Current destination: ${rooms[curDes].name}"
     }
@@ -936,23 +1101,32 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
 
     fun hide() {
         frame.isVisible = false
-        cycleButton.isEnabled = true
+        cycleUpButton.isEnabled = true
+        cycleDownButton.isEnabled = true
         goButton.isEnabled = true
     }
 }
 
+/**
+ * Item selection screen, Allows the player unlock doors and grab items.
+ *  @property curItem, The index of the item the player has selected.
+ *  @property keys, List of items in the players inventory.
+ *  @property room, Room the player is trying to enter.
+ *  @property door, whether the player is trying to enter a room or unlock an item.
+ */
 class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Room, val door: Boolean) {
     var curItem = 0
 
-    val frame = JFrame("Placeholder name")
+    val frame = JFrame("Items")
     private val panel = JPanel().apply { layout = null }
 
     private val infoLabel = JLabel("")
     private val keyLabel = JLabel("What item will you use?")
     private val itemLabel = JLabel("")
-    private val cycleButton = JButton("Next Item")
-    private val useButton = JButton("Use")
+    private val cycleUpButton = JButton("Next")
+    private val cycleDownButton = JButton("Back")
     private val cancelButton = JButton("Cancel")
+    private val useButton = JButton("Use")
     private val failLabel = JLabel(" ")
 
     init {
@@ -969,17 +1143,19 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         infoLabel.setBounds(30, 0, 540, 70)
         keyLabel.setBounds(30, 40, 340, 70)
         itemLabel.setBounds(30, 60, 340, 70)
-        cycleButton.setBounds(20, 110, 150, 30)
-        useButton.setBounds(180, 110, 150, 30)
-        cancelButton.setBounds(20, 160, 150, 30)
+        cycleUpButton.setBounds(20, 110, 110, 30)
+        cycleDownButton.setBounds(145, 110, 110, 30)
+        cancelButton.setBounds(270, 110, 110, 30)
+        useButton.setBounds(20, 160, 150, 30)
         failLabel.setBounds(30, 180, 340, 70)
 
         panel.add(infoLabel)
         panel.add(keyLabel)
         panel.add(itemLabel)
-        panel.add(cycleButton)
-        panel.add(useButton)
+        panel.add(cycleUpButton)
+        panel.add(cycleDownButton)
         panel.add(cancelButton)
+        panel.add(useButton)
         panel.add(failLabel)
     }
 
@@ -988,19 +1164,20 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     }
 
     private fun setupWindow() {
-        frame.isResizable = false                           // Can't resize
-        frame.contentPane = panel                           // Define the main content
+        frame.isResizable = false
+        frame.contentPane = panel
         frame.pack()
-        frame.setLocationRelativeTo(null)                   // Centre on the screen
+        frame.setLocationRelativeTo(null)
     }
 
     private fun setupActions() {
-        cycleButton.addActionListener { cycle() }
+        cycleUpButton.addActionListener { cycleUp() }
+        cycleDownButton.addActionListener { cycleDown() }
         useButton.addActionListener { checkKey() }
         cancelButton.addActionListener { cancel() }
     }
 
-    private fun cycle() {
+    private fun cycleUp() {
         if (curItem == keys.size - 1) {
             curItem = 0
         }
@@ -1010,10 +1187,23 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         updateUI()
     }
 
+    private fun cycleDown() {
+        if (curItem == 0) {
+            curItem = keys.size - 1
+        }
+        else {
+            curItem -= 1
+        }
+        updateUI()
+    }
+
+    // Only new function in this window, checks if the key works.
     private fun checkKey() {
+        // Checks whether you're unlocking a door or obtaining an item.
         if (door == true) {
             if (room.lock == keys[curItem]) {
                 player.removeKey(curItem)
+                room.lock = "Empty"
                 player.nextKey(room)
             } else {
                 tellFail()
@@ -1021,6 +1211,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
         }
         else {
             if (room.itemLock == keys[curItem]) {
+                // Checks if the player has won the game.
                 if (keys[curItem] ==  "Lawnmower") {
                     player.winConMet()
                 }
@@ -1035,25 +1226,33 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     }
 
     private fun cancel() {
-        player.endMove()
+        player.endMove(true)
     }
 
     private fun tellFail() {
         failLabel.text = "That item didn't seem to work..."
     }
 
+    // Updates the visual appearance of the window, and enables/disables buttons.
     fun updateUI() {
         if (door == true) {
             infoLabel.text = "<html><wrap>${room.lockdes}</wrap></html>"
         }
+        // Checks if there are items in the player's inventory,
+        // if there are none buttons are disabled, and vice versa.
         if (keys.size > 0) {
+            if (curItem > keys.size - 1) {
+                curItem = 0
+            }
             itemLabel.text = "Item: ${keys[curItem]}"
-            cycleButton.isEnabled = true
+            cycleUpButton.isEnabled = true
+            cycleDownButton.isEnabled = true
             useButton.isEnabled = true
         }
         else {
             itemLabel.text = "Your inventory is empty."
-            cycleButton.isEnabled = false
+            cycleUpButton.isEnabled = false
+            cycleDownButton.isEnabled = false
             useButton.isEnabled = false
         }
     }
@@ -1067,15 +1266,21 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     }
 }
 
+/**
+ * Item inspection, allows player to look at items.
+ *  @property curItem, The index of the item the player has selected.
+ *  @property inventory, List of items in the players inventory.
+ */
 class InspectWindow(val inventory: MutableList<Item>) {
     var curItem = 0
 
-    val frame = JFrame("Placeholder name")
+    val frame = JFrame("Inventory")
     private val panel = JPanel().apply { layout = null }
 
     private val infoLabel = JLabel("<html><wrap>${inventory[curItem].description}</wrap></html>")
     private val itemLabel = JLabel("Item: ${inventory[curItem].name}")
-    private val cycleButton = JButton("Next Item")
+    private val cycleUpButton = JButton("Next")
+    private val cycleDownButton = JButton("Back")
 
     init {
         setupLayout()
@@ -1087,13 +1292,16 @@ class InspectWindow(val inventory: MutableList<Item>) {
     private fun setupLayout() {
         panel.preferredSize = java.awt.Dimension(400, 110)
 
-        infoLabel.setBounds(160, 40, 210, 70)
+        infoLabel.setBounds(180, 40, 200, 70)
         itemLabel.setBounds(30, 0, 400, 70)
-        cycleButton.setBounds(20, 60, 70, 30)
+        cycleUpButton.setBounds(20, 60, 70, 30)
+        cycleDownButton.setBounds(100, 60, 70, 30)
+
 
         panel.add(infoLabel)
         panel.add(itemLabel)
-        panel.add(cycleButton)
+        panel.add(cycleUpButton)
+        panel.add(cycleDownButton)
     }
 
     private fun setupStyles() {
@@ -1101,17 +1309,18 @@ class InspectWindow(val inventory: MutableList<Item>) {
     }
 
     private fun setupWindow() {
-        frame.isResizable = false                           // Can't resize
-        frame.contentPane = panel                           // Define the main content
+        frame.isResizable = false
+        frame.contentPane = panel
         frame.pack()
-        frame.setLocationRelativeTo(null)                   // Centre on the screen
+        frame.setLocationRelativeTo(null)
     }
 
     private fun setupActions() {
-        cycleButton.addActionListener { cycle() }
+        cycleUpButton.addActionListener { cycleUp() }
+        cycleDownButton.addActionListener { cycleDown() }
     }
 
-    private fun cycle() {
+    private fun cycleUp() {
         if (curItem == inventory.size - 1) {
             curItem = 0
         }
@@ -1121,9 +1330,168 @@ class InspectWindow(val inventory: MutableList<Item>) {
         updateUI()
     }
 
+    private fun cycleDown() {
+        if (curItem == 0) {
+            curItem = inventory.size - 1
+        }
+        else {
+            curItem -= 1
+        }
+        updateUI()
+    }
+
     private fun updateUI() {
         infoLabel.text = "<html><wrap>${inventory[curItem].description}</wrap></html>"
         itemLabel.text = "Item: ${inventory[curItem].name}"
+    }
+
+    fun show() {
+        frame.isVisible = true
+    }
+
+    fun hide() {
+        frame.isVisible = false
+    }
+}
+
+/**
+ * Window for displaying dialogue.
+ *  @property curDialogue, The index of the line of dialogue the player is reading.
+ *  @property complete, Whether the player has finished reading.
+ *  @property won, Whether the player has won the game
+ *  @property dialogue, A list of ines of dialogue that will be played.
+ */
+class WordWindow(val won: Boolean, val dialogue: MutableList<String>) {
+    var curDialogue = 0
+    var complete = false
+
+    val frame = JFrame(" ")
+    private val panel = JPanel().apply { layout = null }
+
+    private val infoLabel = JLabel("<html><wrap>${dialogue[curDialogue]}</wrap></html>")
+    private val nextButton = JButton("Continue")
+
+    init {
+        setupLayout()
+        setupWindow()
+        setupActions()
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(250, 200)
+
+        infoLabel.setBounds(30, 0, 190, 150)
+        nextButton.setBounds(20, 150, 100, 30)
+
+        panel.add(infoLabel)
+        panel.add(nextButton)
+    }
+
+    private fun setupWindow() {
+        frame.isResizable = false
+        frame.contentPane = panel
+        frame.pack()
+        frame.setLocationRelativeTo(null)
+        if (won == false) {
+            frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        }
+    }
+
+    private fun setupActions() {
+        nextButton.addActionListener { nextDialogue() }
+    }
+
+    // Advances to the next line and checks if you're finished reading.
+    private fun nextDialogue() {
+        // Checks if the player has reached the end of the dialogue.
+        if (curDialogue == dialogue.size - 1) {
+            // Checks if the player has won.
+            if (won == true) {
+                exitProcess(0)
+            }
+            else {
+                complete = true
+            }
+        }
+        else {
+            curDialogue += 1
+        }
+        updateUI()
+    }
+
+    private fun updateUI() {
+        infoLabel.text = "<html><wrap>${dialogue[curDialogue]}</wrap></html>"
+        // Changes the button text if the player is on the last line.
+        if (curDialogue == dialogue.size - 1) {
+            nextButton.text = "Finish"
+        }
+    }
+
+    fun show() {
+        frame.isVisible = true
+    }
+
+    fun hide() {
+        frame.isVisible = false
+    }
+}
+
+/**
+ * Tutorial.
+ *  @property curDialogue, The index of the line of dialogue the player is reading.
+ */
+class TutorialWindow(val dialogue: MutableList<String>) {
+    var curDialogue = 0
+
+    val frame = JFrame("Tutorial")
+    private val panel = JPanel().apply { layout = null }
+
+    private val infoLabel = JLabel("<html><wrap>${dialogue[curDialogue]}</wrap></html>")
+    private val nextButton = JButton("Continue")
+
+    init {
+        setupLayout()
+        setupWindow()
+        setupActions()
+    }
+
+    private fun setupLayout() {
+        panel.preferredSize = java.awt.Dimension(250, 200)
+
+        infoLabel.setBounds(30, 0, 190, 150)
+        nextButton.setBounds(20, 150, 100, 30)
+
+        panel.add(infoLabel)
+        panel.add(nextButton)
+    }
+
+    private fun setupWindow() {
+        frame.isResizable = false
+        frame.contentPane = panel
+        frame.pack()
+        frame.setLocationRelativeTo(null)
+    }
+
+    private fun setupActions() {
+        nextButton.addActionListener { nextDialogue() }
+    }
+
+    private fun nextDialogue() {
+        if (curDialogue == dialogue.size - 1) {
+            hide()
+        }
+        else {
+            curDialogue += 1
+        }
+        updateUI()
+    }
+
+    private fun updateUI() {
+        infoLabel.text = "<html><wrap>${dialogue[curDialogue]}</wrap></html>"
+        // Changes the button text if the player is on the last line.
+        if (curDialogue == dialogue.size - 1) {
+            nextButton.text = "Finish"
+        }
     }
 
     fun show() {
