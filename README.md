@@ -1,4 +1,4 @@
-# Esape Room
+# Escape Room
 
 by Oliver Brownrigg
 

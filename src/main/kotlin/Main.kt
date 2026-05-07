@@ -1041,6 +1041,7 @@ class TravelWindow(val player: Player, val rooms: MutableList<Room>) {
     private fun setupWindow() {
         frame.isResizable = false
         frame.contentPane = panel
+        frame.defaultCloseOperation = JFrame.DO_NOTHING_ON_CLOSE
         frame.pack()
         frame.setLocationRelativeTo(null)
     }
@@ -1166,6 +1167,7 @@ class KeyWindow(val player: Player, val keys: MutableList<String>, val room: Roo
     private fun setupWindow() {
         frame.isResizable = false
         frame.contentPane = panel
+        frame.defaultCloseOperation = JFrame.DO_NOTHING_ON_CLOSE
         frame.pack()
         frame.setLocationRelativeTo(null)
     }

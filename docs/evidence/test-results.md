@@ -4,6 +4,8 @@ The test results show the actual outcome of the testing, following the [Test Pla
 
 ---
 
+![Map.png](screenshots/Map.png)
+
 ## Example Test Name
 
 Example test description. Example test description.Example test description. Example test description.Example test description. Example test description.

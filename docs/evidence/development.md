@@ -12,6 +12,14 @@ The development log captures key moments in your application development:
 
 ## Date: 22/04/2026
 
+Made s layout for the game area.
+
+![Map.png](screenshots/Map.png)
+
+---
+
+## Date: 22/04/2026
+
 First Windows are created, this includes a main window that shows the player's current location and inventory. currently the items in the inventory don't display properly, and I also want to change the way the list is printed to make it look nicer.
 
 ![FirstWindows.png](screenshots/FirstWindows.png)
